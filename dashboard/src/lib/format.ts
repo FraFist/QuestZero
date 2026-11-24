@@ -23,6 +23,20 @@ export function formatDateTime(iso: string): string {
   return dateTimeFmt.format(new Date(iso))
 }
 
+const fullFmt = new Intl.DateTimeFormat('it-IT', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: ZONE,
+})
+
+/** "25 nov 2026, 14:05" (documenti da archiviare, es. il report PDF) */
+export function formatDateTimeFull(iso: string): string {
+  return fullFmt.format(new Date(iso))
+}
+
 const clockFmt = new Intl.DateTimeFormat('it-IT', {
   hour: '2-digit',
   minute: '2-digit',

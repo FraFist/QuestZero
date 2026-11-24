@@ -1066,3 +1066,12 @@ a.carta {
     display: none;
   }
 }
+
+/* Pulsanti in alto a destra di una pagina (report, chiusura) */
+.azioni-pagina {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-3);
+}

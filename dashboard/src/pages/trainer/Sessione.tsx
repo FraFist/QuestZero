@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { supabase } from '../../lib/supabase'
 import { VistaDalVivo } from '../../components/VistaDalVivo'
+import { ScaricaReport } from '../../components/ScaricaReport'
 import { formatDateTime, formatDuration } from '../../lib/format'
 import {
   SESSION_COLUMNS,
@@ -116,7 +117,22 @@ export function Sessione() {
             {scenarioName}. Creata il {formatDateTime(session.created_at)}.
           </p>
         </div>
-        {session.status !== 'closed' && <ChiudiSessione sessionId={session.id} />}
+        <div className="azioni-pagina">
+          {session.status !== 'waiting' && (
+            <ScaricaReport
+              sessionId={session.id}
+              session={{
+                participantCode: code,
+                scenarioName,
+                status: session.status,
+                createdAt: session.created_at,
+                startedAt: session.started_at,
+                closedAt: session.closed_at,
+              }}
+            />
+          )}
+          {session.status !== 'closed' && <ChiudiSessione sessionId={session.id} />}
+        </div>
       </div>
 
       {session.status === 'waiting' && (
