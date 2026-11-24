@@ -23,6 +23,18 @@ export function formatDateTime(iso: string): string {
   return dateTimeFmt.format(new Date(iso))
 }
 
+const clockFmt = new Intl.DateTimeFormat('it-IT', {
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  timeZone: ZONE,
+})
+
+/** "14:05:32" (elenco degli eventi dal vivo) */
+export function formatClock(iso: string): string {
+  return clockFmt.format(new Date(iso))
+}
+
 /** "14:05" */
 export function formatTime(iso: string): string {
   return timeFmt.format(new Date(iso))

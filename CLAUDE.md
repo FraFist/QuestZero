@@ -41,6 +41,7 @@ Backend (dalla cartella `backend/`, serve Docker Desktop acceso; la CLI Supabase
 - `analytics` è spento in `config.toml`: su Windows bloccava `db reset`. La pagina Logs di Studio locale quindi non funziona.
 - `npx supabase db reset` ricrea il DB locale applicando tutte le migrazioni (circa 75 s); lanciarlo prima di `npm test` dopo aver cambiato una migrazione.
 - `npm run demo:utenti` — crea nel Supabase locale i formatori e l'amministratore di prova (credenziali in `backend/scripts/utenti-demo.mjs`); da rilanciare dopo ogni `db reset`.
+- `npm run visore:finto -- <codice>` — visore finto: si abbina con il codice di 6 cifre e invia un tentativo completo (opzioni `--non-superato`, `--interrompi`, `--pausa <s>`, `--url <progetto>`). Serve per provare la vista dal vivo senza Unity.
 
 Dashboard (dalla cartella `dashboard/`, con il backend locale acceso):
 - Prima volta: `npm install` e copia `.env.example` in `.env.local` con URL e Publishable key da `npm run status` in `backend/`.

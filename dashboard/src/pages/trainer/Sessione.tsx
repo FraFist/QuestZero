@@ -4,7 +4,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { supabase } from '../../lib/supabase'
-import { formatDateTime, formatDuration, formatTime } from '../../lib/format'
+import { VistaDalVivo } from '../../components/VistaDalVivo'
+import { formatDateTime, formatDuration } from '../../lib/format'
 import {
   SESSION_COLUMNS,
   closeSession,
@@ -124,24 +125,15 @@ export function Sessione() {
         />
       )}
 
-      {session.status === 'active' && (
-        <section className="carta vuoto">
-          <h2>Visore collegato</h2>
-          <p>
-            Il visore si è collegato alle {session.started_at ? formatTime(session.started_at) : '—'}. La vista dal
-            vivo con tempo, errori e punti arriva nel prossimo passo.
-          </p>
-        </section>
+      {session.status === 'closed' && (
+        <div className="avviso">
+          Sessione chiusa il {session.closed_at ? formatDateTime(session.closed_at) : '—'}: il visore non può più inviare
+          dati.
+        </div>
       )}
 
-      {session.status === 'closed' && (
-        <section className="carta vuoto">
-          <h2>Sessione chiusa</h2>
-          <p>
-            Chiusa il {session.closed_at ? formatDateTime(session.closed_at) : '—'}. Il visore non può più inviare dati
-            per questa sessione.
-          </p>
-        </section>
+      {session.status !== 'waiting' && (
+        <VistaDalVivo sessionId={session.id} scenarioId={session.scenario_id} scenarioName={scenarioName} />
       )}
     </>
   )

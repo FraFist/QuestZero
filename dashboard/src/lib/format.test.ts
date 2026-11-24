@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateTime, formatDuration, formatTime } from './format'
+import { formatClock, formatDate, formatDateTime, formatDuration, formatTime } from './format'
 
 describe('formatDuration (tempo trascorso e codice in scadenza, RF-16)', () => {
   it('secondi e minuti', () => {
@@ -25,5 +25,6 @@ describe('date nel fuso di Roma', () => {
   it('data e ora, e solo ora', () => {
     expect(formatDateTime('2026-11-25T13:05:00Z')).toBe('25 nov, 14:05')
     expect(formatTime('2026-07-01T08:00:00Z')).toBe('10:00')
+    expect(formatClock('2026-12-10T10:15:32.481Z')).toBe('11:15:32')
   })
 })

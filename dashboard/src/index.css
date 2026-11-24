@@ -761,3 +761,155 @@ a.carta {
   place-items: center;
   color: var(--p-muted);
 }
+
+/* ---------------------------------------------------------------------------
+   Vista dal vivo (RF-16): l'unico pannello scuro della dashboard, come l'HUD del mockup.
+   I numeri sono la cosa più grande della pagina.
+   --------------------------------------------------------------------------- */
+.dal-vivo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
+}
+@media (max-width: 1023px) {
+  .dal-vivo {
+    grid-template-columns: 1fr;
+  }
+}
+.pannello-vivo {
+  background: var(--p-ink);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+  display: grid;
+  gap: var(--s-7);
+}
+.pannello-vivo :focus-visible {
+  outline-color: #fff;
+}
+.pannello-testa {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: start;
+  gap: var(--s-4);
+}
+.pannello-scenario {
+  color: #9297a4;
+  font-size: var(--t-small);
+  margin-bottom: var(--s-1);
+}
+.pannello-testa h2 {
+  font-size: var(--t-h2);
+}
+.pannello-attesa {
+  color: #c9ccd6;
+  font-size: var(--t-lead);
+}
+.misure {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-5);
+  margin: 0;
+}
+@media (max-width: 639px) {
+  .misure {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.misure > div {
+  display: grid;
+  gap: var(--s-2);
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+  padding-top: var(--s-4);
+}
+.misure dt {
+  font-size: var(--t-label);
+  font-weight: 500;
+  color: #9297a4;
+}
+.misure dd {
+  margin: 0;
+  font-size: clamp(2.5rem, 4.4vw, 3.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.misure .misura-errori {
+  color: #ff8a80;
+}
+.misura-totale {
+  font-size: 0.4em;
+  letter-spacing: 0;
+  color: #9297a4;
+}
+.esito-dal-vivo {
+  color: #fff;
+  background: rgb(255 255 255 / 0.12);
+  gap: var(--s-2);
+}
+.punto-vivo {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulsa 1.6s ease-in-out infinite;
+}
+@keyframes pulsa {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.eventi > h2 {
+  font-size: var(--t-h3);
+}
+.elenco-eventi {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--p-card);
+  border: 1px solid var(--p-line);
+  border-radius: var(--r-lg);
+  max-height: 520px;
+  overflow-y: auto;
+}
+.evento {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: baseline;
+  padding: var(--s-3) var(--s-5) var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--p-line);
+  border-left: 3px solid transparent;
+}
+.evento:last-child {
+  border-bottom: 0;
+}
+.evento time {
+  font-size: var(--t-small);
+}
+.evento-ok {
+  border-left-color: var(--ok-ink);
+}
+.evento-errore {
+  border-left-color: var(--err-ink);
+}
+.evento-errore .evento-testo {
+  color: var(--err-ink);
+}
+.evento-punti {
+  font-size: var(--t-small);
+  font-weight: 500;
+  color: var(--ok-ink);
+}
+/* Un evento appena arrivato si illumina e torna normale: mostra cosa è cambiato. */
+.evento-nuovo {
+  animation: nuovo 1.6s var(--ease);
+}
+@keyframes nuovo {
+  from {
+    background: rgb(43 80 255 / 0.12);
+  }
+}
