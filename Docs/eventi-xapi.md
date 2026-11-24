@@ -4,7 +4,8 @@ Questo è il contratto tra client VR (Unity) e backend. È la fonte di verità: 
 
 Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-13, RNF-14, RNF-18 (vedi `docs/requisiti.md`).
 
-Stato: **bozza 0.1**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+Stato: **bozza 0.2**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+- 0.2: il catalogo dello scenario sta nella tabella `scenarios` e la dashboard lo legge da lì (niente copie nella dashboard). Gli eventi non cambiano, `schemaVersion` resta 1.
 
 ## Principi
 1. **Solo eventi discreti** (RF-12, RNF-13): nessun evento per frame, nessuna posizione, rotazione o direzione dello sguardo. Mai coordinate nei payload.
@@ -16,7 +17,7 @@ Stato: **bozza 0.1**, da confermare con lo sviluppatore Unity. I punti aperti so
 ## Concetti
 - **Sessione**: creata dal formatore dalla dashboard, associata a un codice partecipante (RF-11). Una sessione = un partecipante davanti al visore.
 - **Tentativo**: una esecuzione dello scenario dall'inizio alla fine. Una sessione può avere più tentativi (RF-3); lo storico dei tentativi è RF-4.
-- **Catalogo dello scenario**: file di configurazione che elenca obiettivi, punti di decisione, codici di errore con le etichette leggibili e i criteri di superamento (RNF-15). Lo usano il client per lo scenario e la dashboard per le etichette.
+- **Catalogo dello scenario**: file di configurazione che elenca obiettivi, punti di decisione, codici di errore con le etichette leggibili e i criteri di superamento (RNF-15). Lo usano il client per lo scenario e la dashboard per le etichette. La dashboard lo legge dal backend, mai da una copia nel proprio codice (vedi [Catalogo dello scenario](#catalogo-dello-scenario-esempio)).
 
 ## Busta comune
 Ogni evento ha questa forma:
@@ -195,7 +196,15 @@ Esempio:
 ```
 
 ## Catalogo dello scenario (esempio)
-Il file vive nel progetto Unity e una copia (o un endpoint) è disponibile alla dashboard per le etichette. I contenuti reali li fornisce l'esperto di sicurezza (D2): gli ID qui sotto sono solo segnaposto.
+Dove vive (RNF-14):
+- **Sorgente**: il file JSON nel progetto Unity, insieme allo scenario. Chi crea lo scenario scrive il catalogo.
+- **Copia di riferimento per backend e dashboard**: tabella `scenarios` del database, una riga per ogni coppia `scenarioId` + `scenarioVersion`, con il catalogo intero in una colonna JSON.
+- **Pubblicare uno scenario** = inserire il suo catalogo nella tabella `scenarios`. Non si modificano né il backend né la dashboard.
+- La **dashboard** legge i cataloghi dalla tabella `scenarios`: menu degli scenari, etichette di obiettivi, scelte, errori e zone. Non contiene cataloghi né logica specifica di uno scenario.
+- Il **backend** non interpreta il catalogo: lo conserva e lo rende disponibile. Gli eventi restano validi anche se un codice non è nel catalogo (la dashboard mostra il codice grezzo).
+- Una versione pubblicata non si modifica: per cambiare etichette o criteri si pubblica una nuova `scenarioVersion`, così i tentativi passati restano leggibili con il catalogo con cui sono stati svolti.
+
+I contenuti reali li fornisce l'esperto di sicurezza (D2): gli ID qui sotto sono solo segnaposto.
 
 ```json
 {
