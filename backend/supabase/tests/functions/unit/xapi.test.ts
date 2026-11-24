@@ -119,11 +119,14 @@ Deno.test("choice.made: selected sulla domanda con risposta ed esito", () => {
   assertEquals(statement.result, { response: "co2", success: true });
 });
 
-Deno.test("error.committed: interacted con codice errore", () => {
+Deno.test("RNF-5: error.committed usa failed su un'attività per codice di errore", () => {
   const [statement] = buildStatements(event("error.committed", {
     errorCode: "estintore-acqua-su-quadro-elettrico", errorsTotal: 1,
   }), ctx);
-  assertEquals(statement.verb.id, VERBS.interacted.id);
+  assertEquals(statement.verb.id, "http://adlnet.gov/expapi/verbs/failed");
+  assertEquals(statement.object.id, `${scenarioIri}/errori/estintore-acqua-su-quadro-elettrico`);
+  assertEquals(statement.object.definition.type, ACTIVITY_TYPES.safetyError);
+  assertEquals(statement.context.contextActivities.parent, [{ id: scenarioIri }]);
   assertEquals(statement.result.success, false);
   assertEquals(statement.result.extensions["https://questzero.it/xapi/ext/error-code"],
     "estintore-acqua-su-quadro-elettrico");
@@ -150,6 +153,13 @@ Deno.test("RNF-19: l'attore è solo il codice partecipante, mai email o nome", (
       });
     }
   }
+});
+
+Deno.test("RNF-5: caratteri speciali negli ID codificati negli IRI", () => {
+  const [statement] = buildStatements(event("safety_distance.violated", {
+    zoneId: "zona fumo/denso", errorsTotal: 1,
+  }), ctx);
+  assertEquals(statement.object.id, `${scenarioIri}/zone/zona%20fumo%2Fdenso`);
 });
 
 Deno.test("durata ISO 8601", () => {

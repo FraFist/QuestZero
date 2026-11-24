@@ -1,8 +1,8 @@
 // Traduzione degli eventi del visore in statement xAPI (profilo xAPI-SG).
 // Requisiti: RF-15, RNF-5, RNF-13, RNF-19. Fonte: docs/eventi-xapi.md, "Mappatura in xAPI".
 //
-// ATTENZIONE (punto aperto del contratto): gli IRI del profilo xAPI-SG vanno verificati sulla
-// definizione ufficiale prima del Passo 6. Sono tutti raccolti qui sotto, in un solo posto.
+// IRI verificati il 24/11/2026 sul profilo xAPI-SG ufficiale (contratto, bozza 0.6).
+// Sono tutti raccolti qui sotto, in un solo posto.
 
 import type { VrEvent } from "./contract.ts";
 
@@ -14,9 +14,10 @@ export const VERBS = {
   completed: { id: "http://adlnet.gov/expapi/verbs/completed", it: "ha completato" },
   progressed: { id: "http://adlnet.gov/expapi/verbs/progressed", it: "ha progredito in" },
   selected: { id: "https://w3id.org/xapi/adb/verbs/selected", it: "ha scelto" },
-  interacted: { id: "http://adlnet.gov/expapi/verbs/interacted", it: "ha interagito con" },
   accessed: { id: "https://w3id.org/xapi/seriousgames/verbs/accessed", it: "è entrato in" },
-  // Fuori dal profilo xAPI-SG (contratto): usato per i tentativi interrotti.
+  // Fuori dal profilo xAPI-SG (vocabolario ADL), vedi contratto:
+  // failed per gli errori di sicurezza, terminated per i tentativi interrotti.
+  failed: { id: "http://adlnet.gov/expapi/verbs/failed", it: "ha sbagliato" },
   terminated: { id: "http://adlnet.gov/expapi/verbs/terminated", it: "ha interrotto" },
 } as const;
 
@@ -25,6 +26,8 @@ export const ACTIVITY_TYPES = {
   quest: "https://w3id.org/xapi/seriousgames/activity-types/quest",
   zone: "https://w3id.org/xapi/seriousgames/activity-types/zone",
   question: "http://adlnet.gov/expapi/activities/question",
+  // Tipo proprio: il profilo xAPI-SG non ne prevede uno per gli errori.
+  safetyError: `${BASE}/xapi/activity-types/errore-sicurezza`,
 } as const;
 
 const EXT = {
@@ -55,6 +58,11 @@ export function isoDuration(ms: number): string {
   if (minutes) out += `${minutes}M`;
   if (seconds || out === "PT") out += `${seconds}S`;
   return out;
+}
+
+// Un ID del catalogo dentro un IRI: caratteri speciali codificati (es. spazio → %20).
+function seg(value: unknown): string {
+  return encodeURIComponent(String(value));
 }
 
 function verb(v: { id: string; it: string }) {
@@ -113,7 +121,7 @@ export function buildStatements(event: VrEvent, ctx: StatementContext): Statemen
       return [
         make(
           VERBS.completed,
-          activity(`${scenarioIri}/obiettivi/${p.objectiveId}`, ACTIVITY_TYPES.quest),
+          activity(`${scenarioIri}/obiettivi/${seg(p.objectiveId)}`, ACTIVITY_TYPES.quest),
           { score: { raw: p.pointsAwarded } },
         ),
         make(VERBS.progressed, scenario, {
@@ -125,20 +133,21 @@ export function buildStatements(event: VrEvent, ctx: StatementContext): Statemen
     case "choice.made":
       return [make(
         VERBS.selected,
-        activity(`${scenarioIri}/scelte/${p.choiceId}`, ACTIVITY_TYPES.question),
+        activity(`${scenarioIri}/scelte/${seg(p.choiceId)}`, ACTIVITY_TYPES.question),
         { response: p.optionId, success: p.correct },
       )];
 
     case "error.committed":
-      return [make(VERBS.interacted, scenario, {
-        success: false,
-        extensions: { [EXT.errorCode]: p.errorCode },
-      }, false)];
+      return [make(
+        VERBS.failed,
+        activity(`${scenarioIri}/errori/${seg(p.errorCode)}`, ACTIVITY_TYPES.safetyError),
+        { success: false, extensions: { [EXT.errorCode]: p.errorCode } },
+      )];
 
     case "safety_distance.violated":
       return [make(
         VERBS.accessed,
-        activity(`${scenarioIri}/zone/${p.zoneId}`, ACTIVITY_TYPES.zone),
+        activity(`${scenarioIri}/zone/${seg(p.zoneId)}`, ACTIVITY_TYPES.zone),
         { success: false },
       )];
 
