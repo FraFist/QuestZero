@@ -1,1 +1,30 @@
-{\rtf1}
+# Segreti
+.env
+.env.*
+
+# Node / dashboard
+node_modules/
+dist/
+
+# Supabase locale
+supabase/.temp/
+
+# Unity (se sta nello stesso repo)
+unity/Library/
+unity/Temp/
+unity/Logs/
+unity/Obj/
+unity/Build/
+unity/UserSettings/
+
+# Configurazione degli assistenti (resta solo in locale)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.agents/
+skills-lock.json
+
+# Sistema operativo ed editor
+.DS_Store
+Thumbs.db
+.vs/
