@@ -25,6 +25,9 @@ insert into public.profiles (id, role, participant_code, trainer_id) values
   ('00000000-0000-0000-0000-00000000a001', 'participant', 'P-A001', '00000000-0000-0000-0000-0000000000a1'),
   ('00000000-0000-0000-0000-00000000b001', 'participant', 'P-B001', '00000000-0000-0000-0000-0000000000b1');
 
+-- Il test non dipende dai dati di seed.sql: parte da un'informativa nota.
+delete from public.privacy_acceptances;
+delete from public.privacy_notices;
 insert into public.privacy_notices (version, content, published_at) values
   ('2026-12-01', 'Informativa di prova', now() - interval '1 day');
 
