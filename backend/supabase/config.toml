@@ -440,3 +440,8 @@ verify_jwt = false
 # invite-participant la chiama la dashboard del formatore: serve il login.
 [functions.invite-participant]
 verify_jwt = true
+
+# xapi-sender la chiama solo il database (pg_cron) con la chiave service role, controllata
+# dentro la funzione.
+[functions.xapi-sender]
+verify_jwt = false
