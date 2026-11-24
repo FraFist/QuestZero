@@ -93,6 +93,29 @@ Deno.test({
           { email: `altro-${run}@test.local`, participantCode: `X-${run}` })).status, 401);
       });
 
+      // --- Studente senza email (RF-20, contratto 0.7) ------------------------------------
+      let noEmailId = "";
+      await t.step("RF-20: il formatore registra uno studente con il solo codice e avvia la sessione", async () => {
+        const res = await call("invite-participant", { participantCode: `N-${run}` }, trainerAuth);
+        assertEquals(res.status, 201, JSON.stringify(res.body));
+        assertEquals(res.body.invited, false);
+        noEmailId = res.body.participantId;
+
+        // Nessuna email inviata all'indirizzo fittizio.
+        const mail = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent("partecipanti.questzero.invalid")}`);
+        const found = await mail.json();
+        assertEquals(found.messages_count ?? found.total ?? 0, 0);
+
+        const { data: s, error } = await trainer.from("sessions")
+          .insert({ participant_id: noEmailId, trainer_id: trainerId, scenario_id: "incendio-magazzino" })
+          .select("id").single();
+        assertEquals(error, null);
+        const { data: c } = await trainer.rpc("create_pairing_code", { p_session_id: s!.id });
+        assert(/^[0-9]{6}$/.test(c![0].pairing_code));
+      });
+      // Lo studente senza email si cancella per primo: la sua sessione blocca il formatore.
+      if (noEmailId) await admin.auth.admin.deleteUser(noEmailId);
+
       // --- Sessione e codice di abbinamento (RF-11) ---------------------------------------
       const { data: session, error: sessionError } = await trainer.from("sessions")
         .insert({ participant_id: studentId, trainer_id: trainerId, scenario_id: "incendio-magazzino" })
