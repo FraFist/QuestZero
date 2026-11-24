@@ -4,10 +4,11 @@ Questo è il contratto tra client VR (Unity) e backend. È la fonte di verità: 
 
 Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-11, RNF-12, RNF-13, RNF-14, RNF-18, RNF-19 (vedi `docs/requisiti.md`).
 
-Stato: **bozza 0.4**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+Stato: **bozza 0.5**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
 - 0.2: il catalogo dello scenario sta nella tabella `scenarios` e la dashboard lo legge da lì (niente copie nella dashboard). Gli eventi non cambiano, `schemaVersion` resta 1.
 - 0.3: abbinamento visore ↔ sessione con codice di 6 cifre e token di sessione; `privacy.accepted` solo se il partecipante non ha già accettato (una volta per partecipante); tolto `aborted_by_trainer` (fuori MVP); le violazioni di zona contano negli errori più frequenti (RF-18); indirizzi reali delle Edge Functions. `schemaVersion` resta 1: nessun client è ancora stato scritto con la versione precedente.
 - 0.4: limite generale ai codici sbagliati (`429`) al posto di "5 tentativi di fila" (con il solo codice il backend non sa a quale sessione si riferisce un tentativo sbagliato); nuovo abbinamento per un visore riavviato; scadenza massima del token a 7 giorni.
+- 0.5: risposta di `events` con `accepted` e `rejected` (un evento sbagliato non blocca gli altri), codici di errore dell'intera richiesta (`400`, `401`, `403`, `413`), massimo 100 eventi per richiesta.
 
 ## Principi
 1. **Solo eventi discreti** (RF-12, RNF-13): nessun evento per frame, nessuna posizione, rotazione o direzione dello sguardo. Mai coordinate nei payload.
@@ -143,11 +144,29 @@ Regole:
 - Nessun dato del partecipante nella risposta: né email né codice partecipante.
 
 ## Trasporto
-- Il client invia gli eventi via HTTPS (RNF-12) a `POST https://<progetto>.supabase.co/functions/v1/events`, con `Authorization: Bearer <sessionToken>` e un array di uno o più eventi. Il `sessionId` di ogni evento deve corrispondere al token, altrimenti l'evento è rifiutato con `403`.
-- Risposta `200` con l'elenco degli `eventId` accettati (compresi i duplicati già presenti). Il client li toglie dalla coda solo dopo la conferma.
+- Il client invia gli eventi via HTTPS (RNF-12) a `POST https://<progetto>.supabase.co/functions/v1/events`, con `Authorization: Bearer <sessionToken>` e un array di 1–100 eventi, in ordine di `seq`.
+- Risposta `200`:
+  ```json
+  {
+    "accepted": ["8b0f0a4e-…", "…"],
+    "rejected": [ { "eventId": "…", "reason": "payload.pointsTotal deve essere un intero ≥ 0" } ]
+  }
+  ```
+  - `accepted`: eventi salvati, compresi i duplicati già presenti (RNF-9).
+  - `rejected`: eventi che non rispettano questo contratto. Non vanno reinviati: il client li scrive nel proprio log.
+  - Il client toglie dalla coda **sia gli accettati sia i rifiutati**, solo dopo questa risposta. Un evento sbagliato non blocca gli altri dello stesso pacchetto.
+- Errori sull'intera richiesta (nessun evento salvato):
+
+  | Codice | Quando | Cosa fa il client |
+  |---|---|---|
+  | `400` | Il corpo non è un array JSON di 1–100 elementi | Errore di programma: log, non reinvia così |
+  | `401` | Token mancante, sbagliato o scaduto | Chiede un nuovo codice di abbinamento al formatore; la coda resta su disco |
+  | `403` | Almeno un evento ha un `sessionId` diverso da quello del token | Errore di programma: log |
+  | `413` | Più di 100 eventi | Divide il pacchetto e reinvia |
+  | `5xx` o rete assente | Problema temporaneo | Reinvia più tardi, nello stesso ordine |
 - **Coda persistente sul visore** (RNF-9): ogni evento viene scritto su disco prima dell'invio; se la rete cade, il client continua lo scenario e reinvia in ordine di `seq` al ripristino. Il comando di interruzione (RNF-16) non aspetta la rete.
 - Il backend inoltra gli eventi alla dashboard in tempo reale (entro 3 s, RNF-4).
-- Errori `4xx` di validazione: l'evento non va reinviato, va registrato nel log del client.
+- Abbinamento (`/functions/v1/pair`): `400` se `pairingCode` non è una stringa di 6 cifre, oltre ai codici della sezione [Avvio sul visore](#avvio-sul-visore).
 
 ## Mappatura in xAPI (RF-15, RNF-5)
 Il **backend** traduce gli eventi in statement xAPI e li invia all'LRS di prova. L'invio è asincrono: se l'LRS non risponde, il backend riprova più tardi senza bloccare la sessione.
