@@ -9,10 +9,10 @@ export function TrainerHome() {
           <p>Le sessioni aperte compaiono qui: un clic e sei nella vista dal vivo.</p>
         </div>
       </div>
-      <div className="vuoto">
+      <section className="carta vuoto">
         <h2>Nessuna sessione aperta</h2>
-        <p>La creazione delle sessioni arriva nel prossimo passo: prima registrerai i tuoi studenti.</p>
-      </div>
+        <p>Per creare una sessione registra prima i tuoi studenti: la pagina Studenti arriva nel prossimo passo.</p>
+      </section>
     </>
   )
 }

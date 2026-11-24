@@ -29,12 +29,13 @@ export function Login() {
 
   return (
     <div className="accesso">
-      <div className="accesso-lato">
+      <div className="accesso-logo">
         <img src={logoBianco} alt="QuestZero" />
-        <p>Crea le sessioni, segui lo scenario mentre succede e rivedi gli errori di ogni studente.</p>
       </div>
 
-      <main className="accesso-modulo">
+      <p className="accesso-titolo">Segui ogni studente mentre affronta l'incendio.</p>
+
+      <main className="accesso-targa">
         <h1>Accedi</h1>
         <form className="modulo" onSubmit={onSubmit} noValidate>
           <div className="campo">
@@ -61,14 +62,12 @@ export function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          {error && (
-            <div className="avviso avviso-errore" role="alert">
-              {error}
-            </div>
-          )}
           <button className="btn btn-primario" type="submit" disabled={sending || !email || !password}>
             {sending ? 'Accesso in corso…' : 'Accedi'}
           </button>
+          <p className={`stato-modulo${error ? ' errore' : ''}`} role="status">
+            {error ?? ''}
+          </p>
         </form>
         <p className="accesso-nota">
           Non hai un account? Lo crea il tuo formatore o l'amministratore: non serve registrarsi.
