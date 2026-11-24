@@ -578,6 +578,97 @@ a.carta {
   color: var(--p-muted);
   background: var(--p-surface);
 }
+.esito-attivo {
+  color: var(--p-action);
+  background: rgb(43 80 255 / 0.1);
+}
+.sopratitolo {
+  margin-bottom: var(--s-3);
+}
+.pagina-testa .sopratitolo {
+  margin-top: 0;
+}
+
+/* Modulo in una colonna stretta (nuova sessione) */
+.modulo-stretto {
+  max-width: 560px;
+}
+
+/* Codice di abbinamento: le 6 cifre sono la cosa più grande della pagina */
+.abbinamento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'testo codice'
+    'azioni codice';
+  gap: var(--s-5) var(--s-8);
+  align-items: start;
+}
+.abbinamento-testo {
+  grid-area: testo;
+  display: grid;
+  gap: var(--s-2);
+}
+.abbinamento-testo h2 {
+  font-size: var(--t-h3);
+}
+.abbinamento-codice {
+  grid-area: codice;
+  display: grid;
+  gap: var(--s-2);
+  justify-items: end;
+  align-self: center;
+}
+.codice-grande {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--p-ink);
+  white-space: nowrap;
+  max-width: none;
+}
+.abbinamento-vuoto {
+  color: var(--p-muted);
+  font-size: var(--t-lead);
+}
+.abbinamento-azioni {
+  grid-area: azioni;
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+}
+@media (max-width: 799px) {
+  .abbinamento {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'testo' 'codice' 'azioni';
+  }
+  .abbinamento-codice {
+    justify-items: start;
+  }
+}
+
+/* Conferma in linea (niente finestre a comparsa) */
+.conferma {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-small);
+}
+
+/* Elenco delle sessioni aperte */
+.elenco-sessioni {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--s-5);
+}
+.sessione-carta {
+  display: grid;
+  gap: var(--s-3);
+}
+.sessione-carta h3 {
+  font-size: var(--t-h3);
+}
 
 /* Stato vuoto: una carta con il titolo, cosa succederà e, se c'è, l'azione */
 .vuoto {

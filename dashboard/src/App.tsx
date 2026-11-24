@@ -8,6 +8,8 @@ import { Layout, type MenuItem } from './components/Layout'
 import { Login } from './pages/Login'
 import { TrainerHome } from './pages/trainer/Home'
 import { Studenti } from './pages/trainer/Studenti'
+import { NuovaSessione } from './pages/trainer/NuovaSessione'
+import { Sessione } from './pages/trainer/Sessione'
 import { InPreparazione } from './pages/InPreparazione'
 
 const TRAINER_MENU: MenuItem[] = [
@@ -56,6 +58,8 @@ function Pages() {
         <Route element={<Layout menu={TRAINER_MENU} />}>
           <Route index element={<TrainerHome />} />
           <Route path="studenti" element={<Studenti />} />
+          <Route path="sessioni/nuova" element={<NuovaSessione />} />
+          <Route path="sessioni/:id" element={<Sessione />} />
         </Route>
       )}
       {role === 'participant' && (
