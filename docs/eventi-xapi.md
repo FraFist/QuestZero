@@ -2,10 +2,11 @@
 
 Questo è il contratto tra client VR (Unity) e backend. È la fonte di verità: se un lato ha bisogno di cambiarlo, prima si aggiorna questo file (alzando `schemaVersion` se la modifica non è retrocompatibile), poi il codice.
 
-Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-13, RNF-14, RNF-18 (vedi `docs/requisiti.md`).
+Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-11, RNF-12, RNF-13, RNF-14, RNF-18, RNF-19 (vedi `docs/requisiti.md`).
 
-Stato: **bozza 0.2**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+Stato: **bozza 0.3**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
 - 0.2: il catalogo dello scenario sta nella tabella `scenarios` e la dashboard lo legge da lì (niente copie nella dashboard). Gli eventi non cambiano, `schemaVersion` resta 1.
+- 0.3: abbinamento visore ↔ sessione con codice di 6 cifre e token di sessione; `privacy.accepted` solo se il partecipante non ha già accettato (una volta per partecipante); tolto `aborted_by_trainer` (fuori MVP); le violazioni di zona contano negli errori più frequenti (RF-18); indirizzi reali delle Edge Functions. `schemaVersion` resta 1: nessun client è ancora stato scritto con la versione precedente.
 
 ## Principi
 1. **Solo eventi discreti** (RF-12, RNF-13): nessun evento per frame, nessuna posizione, rotazione o direzione dello sguardo. Mai coordinate nei payload.
@@ -15,7 +16,8 @@ Stato: **bozza 0.2**, da confermare con lo sviluppatore Unity. I punti aperti so
 5. **Nessun evento perso, nessun duplicato** (RNF-9): ogni evento ha un `eventId` generato dal client; il backend ignora gli `eventId` già ricevuti.
 
 ## Concetti
-- **Sessione**: creata dal formatore dalla dashboard, associata a un codice partecipante (RF-11). Una sessione = un partecipante davanti al visore.
+- **Partecipante**: ha un account creato dal formatore (RF-20) con email e codice partecipante (es. `P-0042`). L'email resta nel sistema di autenticazione (RNF-19): visore, eventi e xAPI conoscono solo il codice, e il visore nemmeno quello.
+- **Sessione**: creata dal formatore dalla dashboard scegliendo un partecipante (RF-11). Una sessione = un partecipante davanti al visore. Il visore si collega alla sessione con un codice di abbinamento (vedi [Avvio sul visore](#avvio-sul-visore)).
 - **Tentativo**: una esecuzione dello scenario dall'inizio alla fine. Una sessione può avere più tentativi (RF-3); lo storico dei tentativi è RF-4.
 - **Catalogo dello scenario**: file di configurazione che elenca obiettivi, punti di decisione, codici di errore con le etichette leggibili e i criteri di superamento (RNF-15). Lo usano il client per lo scenario e la dashboard per le etichette. La dashboard lo legge dal backend, mai da una copia nel proprio codice (vedi [Catalogo dello scenario](#catalogo-dello-scenario-esempio)).
 
@@ -41,7 +43,7 @@ Ogni evento ha questa forma:
 |---|---|---|
 | `schemaVersion` | int | Versione di questo contratto. |
 | `eventId` | UUID v4 | Generato dal client. Chiave di deduplicazione. |
-| `sessionId` | UUID | Ricevuto dal backend all'avvio della sessione. |
+| `sessionId` | UUID | Ricevuto dal backend con l'abbinamento (vedi [Avvio sul visore](#avvio-sul-visore)). |
 | `attemptId` | UUID o `null` | Generato dal client a `scenario.started`; `null` per gli eventi fuori da un tentativo (es. `privacy.accepted`). Diventa la `registration` xAPI. |
 | `seq` | int | Progressivo per sessione, parte da 1, senza buchi. Serve al backend per ordinare e accorgersi di eventi mancanti. |
 | `type` | string | Uno dei tipi elencati sotto. |
@@ -52,7 +54,7 @@ Ogni evento ha questa forma:
 ## Tipi di evento
 
 ### `privacy.accepted` (RNF-18)
-Il partecipante ha accettato l'informativa. Va inviato prima di qualunque `scenario.started` della sessione.
+Il partecipante ha accettato l'informativa nel visore. L'accettazione vale una volta per partecipante: il visore mostra l'informativa e invia questo evento **solo** se l'abbinamento risponde `privacyRequired: true` (partecipante che non ha ancora accettato la versione corrente, né nel visore né nella dashboard). In quel caso va inviato prima di qualunque `scenario.started` e `privacyNoticeVersion` è quella ricevuta con l'abbinamento.
 ```json
 { "privacyNoticeVersion": "2026-12-01" }
 ```
@@ -88,7 +90,7 @@ Il partecipante è entrato in una zona di pericolo definita nello scenario. Si m
 ```json
 { "zoneId": "zona-fumo-denso", "errorsTotal": 2 }
 ```
-Conta come errore: il client incrementa `errorsTotal` e **non** manda un `error.committed` separato.
+Conta come errore: il client incrementa `errorsTotal` e **non** manda un `error.committed` separato. Negli errori più frequenti (RF-18) il backend conta insieme gli `errorCode` di `error.committed` e gli `zoneId` di questo evento; `zoneId`, come `errorCode`, deve restare stabile tra versioni dello scenario.
 
 ### `scenario.ended` (RF-13, RF-14, RNF-16)
 Fine del tentativo, in qualunque modo sia finito.
@@ -105,15 +107,40 @@ Fine del tentativo, in qualunque modo sia finito.
 ```
 | Campo | Valori |
 |---|---|
-| `reason` | `completed` (scenario finito), `aborted_by_participant` (comando di interruzione, RNF-16), `aborted_by_trainer` |
+| `reason` | `completed` (scenario finito), `aborted_by_participant` (comando di interruzione, RNF-16). L'interruzione dalla dashboard del formatore è fuori dall'MVP. |
 | `outcome` | `passed`, `failed`; `null` se `reason` non è `completed` |
 | `indicators` | Calcolati dal client con i criteri del catalogo. Unica base per `outcome` (RF-8). |
 
 ### Eventi per la dashboard in tempo reale (RF-16)
 Non serve un evento di "battito": la dashboard ricava scenario in corso, tempo trascorso, errori e punti dagli eventi sopra (`pointsTotal` ed `errorsTotal` sono cumulativi apposta, così un evento perso a video non falsa i totali).
 
-## Trasporto (proposta)
-- Il client invia gli eventi via HTTPS (RNF-12) a `POST /api/v1/sessions/{sessionId}/events`, con un array di uno o più eventi.
+## Avvio sul visore
+Il visore non ha un account e non conosce email o password (RNF-19). Si collega a una sessione così (RNF-11, RNF-12):
+1. Il formatore crea la sessione nella dashboard scegliendo il partecipante. La dashboard mostra un **codice di abbinamento di 6 cifre**, valido 10 minuti e utilizzabile una sola volta.
+2. Il codice si inserisce nel visore con i controller (RNF-7), che lo invia a `POST https://<progetto>.supabase.co/functions/v1/pair`:
+   ```json
+   { "pairingCode": "482913", "clientVersion": "0.3.0" }
+   ```
+3. Il backend risponde:
+   ```json
+   {
+     "sessionId": "c2a1e7d4-5b6f-4e8a-9c0d-1f2e3a4b5c6d",
+     "sessionToken": "<token opaco>",
+     "scenarioId": "incendio-magazzino",
+     "privacyRequired": true,
+     "privacyNoticeVersion": "2026-12-01"
+   }
+   ```
+4. Il visore conserva `sessionToken` su disco, insieme alla coda degli eventi, e lo manda in ogni chiamata nell'intestazione `Authorization: Bearer <sessionToken>`.
+
+Regole:
+- Il token vale **solo** per la sessione per cui è stato emesso: con quel token si possono inviare eventi solo con quel `sessionId`.
+- Il token resta valido fino a 24 ore dopo la chiusura della sessione, così una coda rimasta sul visore per una rete caduta si può ancora svuotare (RNF-9).
+- Codice sbagliato o scaduto: risposta `404`, il visore chiede di nuovo il codice. Dopo 5 tentativi sbagliati di fila il codice viene annullato e il formatore ne genera uno nuovo.
+- Nessun dato del partecipante nella risposta: né email né codice partecipante.
+
+## Trasporto
+- Il client invia gli eventi via HTTPS (RNF-12) a `POST https://<progetto>.supabase.co/functions/v1/events`, con `Authorization: Bearer <sessionToken>` e un array di uno o più eventi. Il `sessionId` di ogni evento deve corrispondere al token, altrimenti l'evento è rifiutato con `403`.
 - Risposta `200` con l'elenco degli `eventId` accettati (compresi i duplicati già presenti). Il client li toglie dalla coda solo dopo la conferma.
 - **Coda persistente sul visore** (RNF-9): ogni evento viene scritto su disco prima dell'invio; se la rete cade, il client continua lo scenario e reinvia in ordine di `seq` al ripristino. Il comando di interruzione (RNF-16) non aspetta la rete.
 - Il backend inoltra gli eventi alla dashboard in tempo reale (entro 3 s, RNF-4).
@@ -228,8 +255,6 @@ I contenuti reali li fornisce l'esperto di sicurezza (D2): gli ID qui sotto sono
 `passCriteria` è l'unico posto in cui stanno le soglie di superamento (RNF-15).
 
 ## Punti aperti
-- Come il visore riceve il `sessionId`: per esempio il formatore crea la sessione per quel visore e il client la scarica all'avvio, oppure il partecipante inserisce un codice breve.
-- Autenticazione del visore verso il backend (token di dispositivo?) (RNF-10, RNF-11).
-- Se il comando di interruzione del formatore (`aborted_by_trainer`) è nell'MVP.
 - Quale LRS di prova usare (D1).
+- Come si chiude una sessione: dal formatore nella dashboard, automaticamente dopo un tempo di inattività, o entrambi.
 - Verifica degli IRI del profilo xAPI-SG sulla definizione ufficiale.
