@@ -6,11 +6,15 @@
     "start": "supabase start",
     "stop": "supabase stop",
     "status": "supabase status",
-    "test": "supabase test db"
+    "test": "supabase test db",
+    "test:unit": "deno test supabase/tests/functions/unit",
+    "test:functions": "deno test --allow-net --allow-env --allow-run --allow-read supabase/tests/functions/integration",
+    "check": "deno check supabase/functions/pair/index.ts supabase/functions/events/index.ts supabase/functions/invite-participant/index.ts"
   },
   "type": "commonjs",
   "private": true,
   "devDependencies": {
+    "deno": "^2.9.6",
     "supabase": "^3.3.0"
   }
 }
