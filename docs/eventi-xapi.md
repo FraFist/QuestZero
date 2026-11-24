@@ -4,9 +4,10 @@ Questo è il contratto tra client VR (Unity) e backend. È la fonte di verità: 
 
 Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-11, RNF-12, RNF-13, RNF-14, RNF-18, RNF-19 (vedi `docs/requisiti.md`).
 
-Stato: **bozza 0.3**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+Stato: **bozza 0.4**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
 - 0.2: il catalogo dello scenario sta nella tabella `scenarios` e la dashboard lo legge da lì (niente copie nella dashboard). Gli eventi non cambiano, `schemaVersion` resta 1.
 - 0.3: abbinamento visore ↔ sessione con codice di 6 cifre e token di sessione; `privacy.accepted` solo se il partecipante non ha già accettato (una volta per partecipante); tolto `aborted_by_trainer` (fuori MVP); le violazioni di zona contano negli errori più frequenti (RF-18); indirizzi reali delle Edge Functions. `schemaVersion` resta 1: nessun client è ancora stato scritto con la versione precedente.
+- 0.4: limite generale ai codici sbagliati (`429`) al posto di "5 tentativi di fila" (con il solo codice il backend non sa a quale sessione si riferisce un tentativo sbagliato); nuovo abbinamento per un visore riavviato; scadenza massima del token a 7 giorni.
 
 ## Principi
 1. **Solo eventi discreti** (RF-12, RNF-13): nessun evento per frame, nessuna posizione, rotazione o direzione dello sguardo. Mai coordinate nei payload.
@@ -135,8 +136,10 @@ Il visore non ha un account e non conosce email o password (RNF-19). Si collega 
 
 Regole:
 - Il token vale **solo** per la sessione per cui è stato emesso: con quel token si possono inviare eventi solo con quel `sessionId`.
-- Il token resta valido fino a 24 ore dopo la chiusura della sessione, così una coda rimasta sul visore per una rete caduta si può ancora svuotare (RNF-9).
-- Codice sbagliato o scaduto: risposta `404`, il visore chiede di nuovo il codice. Dopo 5 tentativi sbagliati di fila il codice viene annullato e il formatore ne genera uno nuovo.
+- Il token resta valido fino a 24 ore dopo la chiusura della sessione, così una coda rimasta sul visore per una rete caduta si può ancora svuotare (RNF-9). In ogni caso scade 7 giorni dopo l'emissione, anche se la sessione non viene chiusa.
+- Codice sbagliato, scaduto o già usato: risposta `404`, il visore chiede di nuovo il codice.
+- Troppi tentativi: dopo 20 codici sbagliati in 10 minuti (da qualunque visore) l'abbinamento risponde `429` finché la finestra di 10 minuti non scende sotto la soglia. Il visore mostra "riprova tra qualche minuto". Con un milione di codici possibili e 10 minuti di validità, indovinarne uno è praticamente impossibile.
+- Visore riavviato a sessione già iniziata: il formatore genera un nuovo codice per la stessa sessione e il visore si abbina di nuovo. Riceve un nuovo token; anche i token precedenti restano validi, così la coda salvata su disco si può ancora inviare.
 - Nessun dato del partecipante nella risposta: né email né codice partecipante.
 
 ## Trasporto
