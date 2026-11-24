@@ -1,10 +1,10 @@
 # Stato del progetto
 
-Aggiornato al **24/11/2026**. Serve a chi riprende il lavoro (anche in una nuova chat): cosa c'è, cosa manca, cosa è stato deciso.
+Aggiornato al **25/11/2026**. Serve a chi riprende il lavoro (anche in una nuova chat): cosa c'è, cosa manca, cosa è stato deciso.
 Documenti di riferimento: [`requisiti.md`](requisiti.md), [`eventi-xapi.md`](eventi-xapi.md) (contratto, bozza 0.7), [`guida-unity.md`](guida-unity.md). Comandi e regole di lavoro: [`../CLAUDE.md`](../CLAUDE.md).
 
 ## In una riga
-Il **backend** (Supabase) è completo e testato; la **dashboard** e il **client Unity** sono ancora da scrivere. Online il backend c'è ma va aggiornato alle ultime modifiche e riempito con i dati iniziali (passaggi manuali più sotto).
+Il **backend** (Supabase) è completo e testato; della **dashboard** sono pronte le pagine del formatore (fase 1), mancano errori frequenti, PDF, studente e amministratore; il **client Unity** è da scrivere (intanto c'è il visore finto). Online il backend c'è ma va riempito con i dati iniziali (passaggi manuali più sotto); la dashboard gira solo in locale.
 
 ## Fatto
 
@@ -27,7 +27,21 @@ Il **backend** (Supabase) è completo e testato; la **dashboard** e il **client 
 
 Regole di accesso nel database (RLS): lo studente vede solo i propri dati, il formatore solo i propri studenti e sessioni, l'amministratore tutto, chi non ha fatto il login niente. Codici e token salvati solo come impronta SHA-256. L'email dello studente non esce mai dal sistema di login (RNF-19).
 
-### Test (tutti passano)
+### Dashboard (`dashboard/`, React + Vite + TypeScript)
+| Pagina | Cosa fa | Requisiti |
+|---|---|---|
+| Accesso | Email e password; il ruolo (profiles) decide le pagine; nessuna registrazione libera | RF-20, RF-22 |
+| Sessioni (pagina iniziale) | Sessioni aperte in 1 clic, chiuse di recente; si aggiorna con Realtime | RNF-8 |
+| Studenti | Elenco dei propri studenti; registrazione con solo codice o con email (invito) | RF-20, RF-22, RNF-19 |
+| Nuova sessione e sessione | Codice di 6 cifre con scadenza; passa da sola a "In corso" all'abbinamento; chiusura | RF-11, RF-23 |
+| Vista dal vivo | Tempo, errori, punti, obiettivi ed eventi con etichette dal catalogo | RF-16, RNF-4, RNF-14 |
+| Risultati dello studente | Esito, punti, livello, errori, tempo e sequenza per tentativo, con il dettaglio degli errori | RF-17, RF-8 |
+
+Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans; regole da `.claude/skills/design-taste-frontend` (solo in locale). 43 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
+
+Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministratore di prova, solo in locale) e `npm run visore:finto -- <codice>` (simula il client Unity).
+
+### Test del backend (tutti passano)
 - **167** test del database (pgTAP): `npm test`
 - **31** test unitari delle funzioni (Deno): `npm run test:unit`
 - **2** test completi contro Supabase locale e LRS di prova (15 passaggi): `npm run test:functions` — coprono anche la prova **P-4** (statement accettati da un LRS reale).
@@ -62,12 +76,7 @@ Regole di accesso nel database (RLS): lo studente vede solo i propri dati, il fo
 10. **Indirizzo della dashboard** (quando sarà pubblicata su `dashboard.questzero.it`): Authentication → URL Configuration (Site URL e Redirect URLs) e `npx supabase secrets set DASHBOARD_URL=https://dashboard.questzero.it DASHBOARD_ORIGIN=https://dashboard.questzero.it`.
 
 ### Da sviluppare
-- **Dashboard** (`dashboard/`, React + Vite + TypeScript), da pubblicare su `dashboard.questzero.it`:
-  - login (formatore, studente, amministratore) con Supabase Auth;
-  - formatore: elenco dei propri studenti e registrazione (con o senza email), creazione della sessione e codice di 6 cifre, vista dal vivo (RF-16, RNF-4 ≤ 3 s, RNF-8 ≤ 3 clic), chiusura della sessione, esiti per studente (RF-17), errori più frequenti (RF-18), report PDF (RF-19);
-  - studente: accettazione dell'informativa al primo accesso (RNF-18), i propri tentativi (RF-21);
-  - amministratore: vista completa, ruoli, spostamento di studenti tra formatori (RF-22).
-  - Dati da usare: tabelle `sessions`, `profiles`, `scenarios_latest`; viste `attempt_overview`, `attempt_errors`; funzioni `create_pairing_code`, `frequent_errors`; Edge Function `invite-participant`; Realtime su `events`, `attempts`, `sessions`.
+- **Dashboard**, ancora da fare (in ordine): errori più frequenti (RF-18), report PDF della sessione (RF-19); poi studente (imposta password dall'invito, informativa al primo accesso RNF-18, propri tentativi RF-21) e amministratore (vista completa, ruoli, spostamento di studenti RF-22); infine pubblicazione su `dashboard.questzero.it` (passaggio manuale 10).
 - **Client Unity** (`unity/`): seguire `guida-unity.md` e il contratto.
 - **Non implementato** (non richiesto finora): aggiungere l'email in un secondo momento a uno studente registrato con il solo codice.
 
