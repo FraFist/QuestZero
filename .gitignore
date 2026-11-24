@@ -18,7 +18,6 @@ unity/Build/
 unity/UserSettings/
 
 # Configurazione degli assistenti (resta solo in locale)
-CLAUDE.md
 CLAUDE.local.md
 .claude/
 .agents/
