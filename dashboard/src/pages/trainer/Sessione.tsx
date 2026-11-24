@@ -107,7 +107,10 @@ export function Sessione() {
             <span className={`esito ${statusClass(session.status)}`}>{statusLabel(session.status)}</span>
           </p>
           <h1>
-            Sessione di <span className="codice">{code}</span>
+            Sessione di{" "}
+            <Link className="codice link-codice" to={`/studenti/${session.participant_id}`}>
+              {code}
+            </Link>
           </h1>
           <p>
             {scenarioName}. Creata il {formatDateTime(session.created_at)}.

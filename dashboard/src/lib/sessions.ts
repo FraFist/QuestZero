@@ -28,12 +28,13 @@ export function msUntil(expiresAt: string, now: number): number {
 // Lettura dal database (la RLS limita alle sessioni del formatore, RF-22)
 // ---------------------------------------------------------------------------
 export const SESSION_COLUMNS =
-  'id, status, scenario_id, created_at, started_at, closed_at, participant:profiles!sessions_participant_id_fkey(participant_code)'
+  'id, status, scenario_id, participant_id, created_at, started_at, closed_at, participant:profiles!sessions_participant_id_fkey(participant_code)'
 
 export interface SessionRow {
   id: string
   status: SessionStatus
   scenario_id: string
+  participant_id: string
   created_at: string
   started_at: string | null
   closed_at: string | null

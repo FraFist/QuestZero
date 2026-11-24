@@ -78,7 +78,9 @@ export function Studenti() {
                 {students.map((s) => (
                   <tr key={s.id}>
                     <td>
-                      <span className="codice">{s.participant_code}</span>
+                      <Link className="codice link-codice" to={`/studenti/${s.id}`} aria-label={`Risultati di ${s.participant_code}`}>
+                        {s.participant_code}
+                      </Link>
                     </td>
                     <td className="muted">{formatDate(s.created_at)}</td>
                     <td className="azioni">

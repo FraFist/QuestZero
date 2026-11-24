@@ -913,3 +913,54 @@ a.carta {
     background: rgb(43 80 255 / 0.12);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Risultati per studente (RF-17)
+   --------------------------------------------------------------------------- */
+.link {
+  color: var(--p-action);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  font-size: var(--t-small);
+}
+.tentativo-n {
+  white-space: nowrap;
+}
+.riga-dettaglio td {
+  background: var(--p-bg);
+}
+.dettaglio {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+  padding: var(--s-2) 0;
+}
+.elenco-errori {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.elenco-errori li {
+  display: flex;
+  gap: var(--s-3);
+  align-items: baseline;
+  color: var(--err-ink);
+}
+.elenco-errori time {
+  font-size: var(--t-small);
+}
+/* Codice studente che porta ai suoi risultati */
+.link-codice {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgb(11 16 38 / 0.3);
+  text-underline-offset: 0.2em;
+}
+.link-codice:hover {
+  color: var(--p-action);
+  text-decoration-color: currentColor;
+}
