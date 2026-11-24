@@ -4,7 +4,7 @@ Aggiornato al **25/11/2026**. Serve a chi riprende il lavoro (anche in una nuova
 Documenti di riferimento: [`requisiti.md`](requisiti.md), [`eventi-xapi.md`](eventi-xapi.md) (contratto, bozza 0.7), [`guida-unity.md`](guida-unity.md). Comandi e regole di lavoro: [`../CLAUDE.md`](../CLAUDE.md).
 
 ## In una riga
-Il **backend** (Supabase) è completo e testato; della **dashboard** sono pronte le pagine del formatore (fase 1), mancano errori frequenti, PDF, studente e amministratore; il **client Unity** è da scrivere (intanto c'è il visore finto). Online il backend c'è ma va riempito con i dati iniziali (passaggi manuali più sotto); la dashboard gira solo in locale.
+Il **backend** (Supabase) è completo e testato; della **dashboard** sono pronte le pagine del formatore (fasi 1 e 2: dal vivo, risultati, errori frequenti, PDF), mancano studente e amministratore; il **client Unity** è da scrivere (intanto c'è il visore finto). Online il backend c'è ma va riempito con i dati iniziali (passaggi manuali più sotto); la dashboard gira solo in locale.
 
 ## Fatto
 
@@ -36,8 +36,10 @@ Regole di accesso nel database (RLS): lo studente vede solo i propri dati, il fo
 | Nuova sessione e sessione | Codice di 6 cifre con scadenza; passa da sola a "In corso" all'abbinamento; chiusura | RF-11, RF-23 |
 | Vista dal vivo | Tempo, errori, punti, obiettivi ed eventi con etichette dal catalogo | RF-16, RNF-4, RNF-14 |
 | Risultati dello studente | Esito, punti, livello, errori, tempo e sequenza per tentativo, con il dettaglio degli errori | RF-17, RF-8 |
+| Errori frequenti | Classifica di errori e zone su tutte le sessioni dello scenario, solo conteggi | RF-18, RF-22 |
+| Report PDF | Dalla pagina della sessione: dati, indicatori ed errori di ogni tentativo, generato nel browser (jsPDF) | RF-19, RNF-19 |
 
-Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans; regole da `.claude/skills/design-taste-frontend` (solo in locale). 43 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
+Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans; regole da `.claude/skills/design-taste-frontend` (solo in locale). 54 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
 
 Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministratore di prova, solo in locale) e `npm run visore:finto -- <codice>` (simula il client Unity).
 
@@ -76,7 +78,7 @@ Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministrato
 10. **Indirizzo della dashboard** (quando sarà pubblicata su `dashboard.questzero.it`): Authentication → URL Configuration (Site URL e Redirect URLs) e `npx supabase secrets set DASHBOARD_URL=https://dashboard.questzero.it DASHBOARD_ORIGIN=https://dashboard.questzero.it`.
 
 ### Da sviluppare
-- **Dashboard**, ancora da fare (in ordine): errori più frequenti (RF-18), report PDF della sessione (RF-19); poi studente (imposta password dall'invito, informativa al primo accesso RNF-18, propri tentativi RF-21) e amministratore (vista completa, ruoli, spostamento di studenti RF-22); infine pubblicazione su `dashboard.questzero.it` (passaggio manuale 10).
+- **Dashboard**, ancora da fare (in ordine): studente (imposta password dall'invito, informativa al primo accesso RNF-18, propri tentativi RF-21) e amministratore (vista completa, ruoli, spostamento di studenti RF-22); infine pubblicazione su `dashboard.questzero.it` (passaggio manuale 10).
 - **Client Unity** (`unity/`): seguire `guida-unity.md` e il contratto.
 - **Non implementato** (non richiesto finora): aggiungere l'email in un secondo momento a uno studente registrato con il solo codice.
 
