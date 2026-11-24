@@ -4,11 +4,12 @@ Questo è il contratto tra client VR (Unity) e backend. È la fonte di verità: 
 
 Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-11, RNF-12, RNF-13, RNF-14, RNF-18, RNF-19 (vedi `docs/requisiti.md`).
 
-Stato: **bozza 0.5**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+Stato: **bozza 0.6**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
 - 0.2: il catalogo dello scenario sta nella tabella `scenarios` e la dashboard lo legge da lì (niente copie nella dashboard). Gli eventi non cambiano, `schemaVersion` resta 1.
 - 0.3: abbinamento visore ↔ sessione con codice di 6 cifre e token di sessione; `privacy.accepted` solo se il partecipante non ha già accettato (una volta per partecipante); tolto `aborted_by_trainer` (fuori MVP); le violazioni di zona contano negli errori più frequenti (RF-18); indirizzi reali delle Edge Functions. `schemaVersion` resta 1: nessun client è ancora stato scritto con la versione precedente.
 - 0.4: limite generale ai codici sbagliati (`429`) al posto di "5 tentativi di fila" (con il solo codice il backend non sa a quale sessione si riferisce un tentativo sbagliato); nuovo abbinamento per un visore riavviato; scadenza massima del token a 7 giorni.
 - 0.5: risposta di `events` con `accepted` e `rejected` (un evento sbagliato non blocca gli altri), codici di errore dell'intera richiesta (`400`, `401`, `403`, `413`), massimo 100 eventi per richiesta.
+- 0.6: IRI verificati sul profilo xAPI-SG ufficiale; `error.committed` diventa `failed` su un'attività per codice di errore (il profilo non prevede `interacted` per gli errori); scelta documentata per `initialized`.
 
 ## Principi
 1. **Solo eventi discreti** (RF-12, RNF-13): nessun evento per frame, nessuna posizione, rotazione o direzione dello sguardo. Mai coordinate nei payload.
@@ -171,7 +172,14 @@ Regole:
 ## Mappatura in xAPI (RF-15, RNF-5)
 Il **backend** traduce gli eventi in statement xAPI e li invia all'LRS di prova. L'invio è asincrono: se l'LRS non risponde, il backend riprova più tardi senza bloccare la sessione.
 
-Vocabolario: profilo xAPI for Serious Games (xAPI-SG), `https://w3id.org/xapi/seriousgames`. Il profilo pubblicato su GitHub ha alcune incoerenze tra tabelle ed esempi: **prima di implementare, verificare ogni IRI sulla definizione ufficiale del profilo**.
+Vocabolario: profilo xAPI for Serious Games (xAPI-SG), `https://w3id.org/xapi/seriousgames`.
+
+**Verifica degli IRI (24/11/2026)** sulla definizione ufficiale: file JSON-LD `public_html/seriousgames.jsonld` e README del repository `github.com/e-ucm/xapi-seriousgames` (l'indirizzo w3id rimanda a un visualizzatore senza contenuto leggibile).
+- Confermati: `completed`, `progressed`, `selected` (con `question`), `accessed` (con `zone`); tipi `serious-game`, `quest`, `zone`, `question`; estensione `progress`; IRI del profilo senza versione per `category`.
+- `initialized`: le fonti ufficiali si contraddicono (README `http://adlnet.gov/expapi/verbs/initialized`, JSON-LD `https://w3id.org/xapi/adb/verbs/initialized`). Usiamo la forma ADL del README, la più diffusa.
+- Gli esempi del README usano alcuni IRI non ufficiali (`rage.e-ucm.es/...`, verbo `preferred`): **non** vanno copiati.
+- Il profilo **non** ha un modo ufficiale per gli errori; `interacted` è previsto solo per oggetti e personaggi del gioco. Per gli errori usiamo il verbo ADL `failed` (vedi tabella).
+- `terminated` e `failed` sono verbi del vocabolario ADL, fuori dal profilo; il sito ADL non era raggiungibile durante la verifica, quindi la loro definizione **non è stata riletta sulla fonte**.
 
 ### Campi comuni degli statement
 - **actor**: mai nome o email (privacy). Si usa un account con il codice partecipante:
@@ -182,7 +190,7 @@ Vocabolario: profilo xAPI for Serious Games (xAPI-SG), `https://w3id.org/xapi/se
 - **context.contextActivities.category**: `[{ "id": "https://w3id.org/xapi/seriousgames" }]`, per dichiarare il profilo.
 - **context.contextActivities.parent**: l'attività dello scenario (tranne che negli statement sullo scenario stesso).
 - **timestamp**: il `timestamp` dell'evento, non l'ora di invio.
-- **IRI delle attività**: `https://questzero.it/xapi/scenari/{scenarioId}` e sotto-percorsi (`/obiettivi/{objectiveId}`, `/scelte/{choiceId}`, `/zone/{zoneId}`).
+- **IRI delle attività**: `https://questzero.it/xapi/scenari/{scenarioId}` e sotto-percorsi (`/obiettivi/{objectiveId}`, `/scelte/{choiceId}`, `/zone/{zoneId}`, `/errori/{errorCode}`).
 - **Estensioni proprie**: sotto `https://questzero.it/xapi/ext/` (es. `.../ext/error-code`, `.../ext/errors`, `.../ext/sequence-respected`, `.../ext/level`).
 - **Mai** l'estensione `position` del profilo (RNF-13).
 
@@ -194,7 +202,7 @@ Vocabolario: profilo xAPI for Serious Games (xAPI-SG), `https://w3id.org/xapi/se
 | `objective.completed` | completed `http://adlnet.gov/expapi/verbs/completed` | obiettivo (quest) | `score.raw` = `pointsAwarded` |
 | `objective.completed` | progressed `http://adlnet.gov/expapi/verbs/progressed` | scenario (serious-game) | ext. progress = `objectivesCompleted / objectivesTotal` |
 | `choice.made` | selected `https://w3id.org/xapi/adb/verbs/selected` | punto di decisione (question) | `response` = `optionId`, `success` = `correct` |
-| `error.committed` | interacted `http://adlnet.gov/expapi/verbs/interacted` | scenario (serious-game) | `success: false`, ext. `error-code` |
+| `error.committed` | failed `http://adlnet.gov/expapi/verbs/failed` (fuori dal profilo) | errore `/errori/{errorCode}` (tipo proprio `https://questzero.it/xapi/activity-types/errore-sicurezza`) | `success: false`, ext. `error-code` |
 | `safety_distance.violated` | accessed `https://w3id.org/xapi/seriousgames/verbs/accessed` | zona (zone) | `success: false` |
 | `scenario.ended` con `completed` | completed | scenario (serious-game) | vedi sotto |
 | `scenario.ended` interrotto | terminated `http://adlnet.gov/expapi/verbs/terminated` (fuori dal profilo) | scenario (serious-game) | `completion: false`, `duration` |
@@ -204,6 +212,7 @@ IRI dei tipi di attività:
 - quest: `https://w3id.org/xapi/seriousgames/activity-types/quest`
 - zone: `https://w3id.org/xapi/seriousgames/activity-types/zone`
 - question: `http://adlnet.gov/expapi/activities/question`
+- errore-sicurezza (proprio, il profilo non ne ha uno): `https://questzero.it/xapi/activity-types/errore-sicurezza`
 
 ### Statement di fine scenario
 - `result.success` = `outcome == "passed"` (deciso solo dagli indicatori, RF-8).
@@ -277,6 +286,5 @@ I contenuti reali li fornisce l'esperto di sicurezza (D2): gli ID qui sotto sono
 `passCriteria` è l'unico posto in cui stanno le soglie di superamento (RNF-15).
 
 ## Punti aperti
-- Quale LRS di prova usare (D1).
+- Quale LRS di prova usare online (D1). In locale: SQL LRS di Yet Analytics in Docker.
 - Come si chiude una sessione: dal formatore nella dashboard, automaticamente dopo un tempo di inattività, o entrambi.
-- Verifica degli IRI del profilo xAPI-SG sulla definizione ufficiale.
