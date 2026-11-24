@@ -8,6 +8,7 @@ Fonte: specifica dei requisiti consegnata il 18/11/2026 (ISO/IEC/IEEE 29148). Qu
 > **Differenze rispetto alla specifica consegnata.** Decise dal gruppo dopo la consegna, da segnalare al docente e nella relazione:
 > - Il partecipante ha un account e consulta i propri risultati nella dashboard (nuovi RU-8, RF-20, RF-21, RNF-19; modificati RF-11, RNF-10, RNF-18). Nella specifica i profili dei partecipanti erano fuori perimetro.
 > - L'interruzione della sessione dalla dashboard del formatore resta fuori dall'MVP.
+> - Ogni formatore vede solo i propri studenti e le proprie sessioni; un amministratore vede tutto (nuovo RF-22; modificati Ruoli, RF-17, RNF-11). Nella specifica l'amministratore non era un utente del sistema.
 
 ## Perimetro
 Dentro: un solo scenario decisionale in VR (emergenza incendio con estintore) per un partecipante alla volta, con obiettivi intermedi, punti e livello; proiezione della vista in aula; tracciamento e valutazione dell'esito; dashboard del formatore in tempo reale; account del partecipante per consultare i propri risultati; invio dei risultati in xAPI a un sistema esterno; struttura che permette di aggiungere scenari senza modificare il resto.
@@ -16,7 +17,8 @@ Fuori (non implementare): altri scenari, gestione di corsi, profili dei partecip
 
 ## Ruoli
 - **Partecipante**: svolge lo scenario nel visore; con il proprio account consulta i propri risultati nella dashboard.
-- **Formatore**: conduce l'aula, segue la sessione dalla dashboard, fa il debriefing.
+- **Formatore**: conduce l'aula, segue la sessione dalla dashboard, fa il debriefing. Invita i propri studenti e vede solo loro e le proprie sessioni.
+- **Amministratore**: vede tutti i dati di tutti i formatori e studenti; assegna i ruoli e sposta uno studente da un formatore a un altro.
 - Gli altri stakeholder (ente di formazione, amministratore IT, responsabile privacy) non sono utenti del sistema, ma generano requisiti.
 
 ## Requisiti utente
@@ -52,11 +54,12 @@ Componente indicativo: **VR** = client Unity, **BE** = backend, **DB** = dashboa
 | RF-14 | Tracciamento | Assegnare l'esito «superato» o «non superato» confrontando gli indicatori di RF-13 con i criteri dello scenario. | RU-5 | VR |
 | RF-15 | Tracciamento | Inviare i risultati di ogni sessione a un sistema esterno di tracciamento in formato xAPI. | RU-7, SdA R2 | BE |
 | RF-16 | Dashboard | Mostrare, durante la sessione, scenario in corso, tempo trascorso, errori commessi e punti ottenuti. | RU-4, SdA R8 | DB |
-| RF-17 | Dashboard | Mostrare per ogni partecipante esito, punteggio, livello ed errori. | RU-5 | DB |
+| RF-17 | Dashboard | Mostrare per ogni proprio partecipante esito, punteggio, livello ed errori. | RU-5 | DB |
 | RF-18 | Dashboard | Mostrare gli errori più frequenti tra tutte le sessioni dello scenario. | RU-5 | BE, DB |
 | RF-19 | Dashboard | Consentire di scaricare il report di una sessione in PDF. | RU-5 | BE, DB |
 | RF-20 | Account | Consentire al formatore di creare l'account di un partecipante (email e codice partecipante) con invito via email; non è prevista la registrazione libera. | RU-8 | BE, DB |
 | RF-21 | Account | Consentire al partecipante autenticato di consultare solo i propri tentativi, con esito, punti, livello ed errori. | RU-8 | BE, DB |
+| RF-22 | Account | Limitare ogni formatore ai propri studenti (quelli che ha invitato) e alle proprie sessioni; consentire all'amministratore di vedere tutto. Gli errori più frequenti (RF-18) restano calcolati su tutte le sessioni, ma come soli conteggi. | RU-5 | BE, DB |
 
 ## Requisiti non funzionali
 | ID | Caratteristica (ISO 25010) | Requisito | Fonte |
@@ -71,7 +74,7 @@ Componente indicativo: **VR** = client Unity, **BE** = backend, **DB** = dashboa
 | RNF-8 | Capacità di interazione | La vista in tempo reale di una sessione si raggiunge in non più di 3 clic dalla pagina iniziale della dashboard. | Formatore |
 | RNF-9 | Affidabilità | Se cade la connessione durante una sessione, il sistema conserva tutti gli eventi e li invia al ripristino, senza perdite in 10 prove. | Formatore |
 | RNF-10 | Sicurezza informatica | Accesso alla dashboard solo a utenti autenticati (formatori e partecipanti). | Amm. IT |
-| RNF-11 | Sicurezza informatica | Accesso a ogni funzione limitato ai ruoli autorizzati (partecipante, formatore). | Amm. IT |
+| RNF-11 | Sicurezza informatica | Accesso a ogni funzione limitato ai ruoli autorizzati (partecipante, formatore, amministratore). | Amm. IT |
 | RNF-12 | Sicurezza informatica | Dati personali cifrati durante la trasmissione. | Amm. IT, Privacy |
 | RNF-13 | Sicurezza informatica | **Non** memorizzare i movimenti continui di testa, mani e sguardo. | Privacy, SdA R6 |
 | RNF-14 | Manutenibilità | Un nuovo scenario si aggiunge senza modificare tracciamento, valutazione e dashboard. | Ente, SdA R2 |
@@ -86,7 +89,7 @@ Componente indicativo: **VR** = client Unity, **BE** = backend, **DB** = dashboa
 - **RF-12 + RNF-13**: si inviano solo eventi discreti, mai uno per frame o flussi continui di posizione e sguardo.
 - **RNF-9**: il client mette gli eventi in coda e li reinvia al ripristino della connessione, senza duplicarli.
 - **RNF-14 + RNF-15**: tracciamento, valutazione e dashboard non contengono logica specifica dello scenario incendio; i criteri di superamento sono dati di configurazione, non codice.
-- **RNF-11 + RF-21**: le regole di accesso stanno nel database (RLS): il partecipante legge solo le proprie righe, il formatore tutte.
+- **RNF-11 + RF-21 + RF-22**: le regole di accesso stanno nel database (RLS): il partecipante legge solo le proprie righe, il formatore quelle dei propri studenti e delle proprie sessioni, l'amministratore tutte.
 - **RNF-19**: l'email vive solo nel sistema di autenticazione; ovunque altrove il partecipante è il suo codice.
 - Il formato degli eventi VR → backend e la mappatura in xAPI sono definiti in `docs/eventi-xapi.md`.
 
@@ -100,7 +103,7 @@ Gli ID P-n sono aggiunti qui per comodità; nella specifica le prove non sono nu
 | P-3 | Dashboard | Test, dimostrazione | RF-16, RF-17, RF-18, RF-19, RF-21, RNF-8 | Dati attesi in tempo reale, vista live in non più di 3 clic, report PDF scaricato; il partecipante vede i propri tentativi. |
 | P-4 | Invio a un sistema di tracciamento di prova | Test | RF-15, RNF-5 | I risultati arrivano al sistema di prova in formato xAPI. |
 | P-5 | Misure di prestazione | Test | RNF-2, RNF-3, RNF-4 | Soglie rispettate durante lo scenario e sulla dashboard. |
-| P-6 | Affidabilità e accesso | Test | RF-20, RF-21, RNF-9, RNF-10, RNF-11 | Nessuna perdita di eventi in 10 prove; accessi consentiti solo ai ruoli previsti; un partecipante non vede i dati di un altro; solo il formatore crea account. |
+| P-6 | Affidabilità e accesso | Test | RF-20, RF-21, RF-22, RNF-9, RNF-10, RNF-11 | Nessuna perdita di eventi in 10 prove; accessi consentiti solo ai ruoli previsti; un partecipante non vede i dati di un altro; un formatore non vede studenti e sessioni di un altro; l'amministratore vede tutto; solo il formatore crea account partecipante. |
 | P-7 | Compatibilità con il visore | Test | RNF-6 | Il client si installa e funziona sul visore senza computer. |
 | P-8 | Interruzione sul visore | Test | RNF-16 | La sessione si interrompe entro 1 s dal comando. |
 | P-9 | Controllo di dati e contenuti | Ispezione | RNF-12, RNF-13, RNF-17, RNF-19 | Trasmissione cifrata, nessun movimento continuo nei dati salvati, nessuna email fuori dal sistema di autenticazione, non più di 3 lampeggiamenti al secondo. |
