@@ -4,12 +4,13 @@ Questo è il contratto tra client VR (Unity) e backend. È la fonte di verità: 
 
 Requisiti coperti: RF-4, RF-11, RF-12, RF-13, RF-14, RF-15, RF-16, RF-18, RNF-5, RNF-9, RNF-11, RNF-12, RNF-13, RNF-14, RNF-18, RNF-19 (vedi `docs/requisiti.md`).
 
-Stato: **bozza 0.6**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
+Stato: **bozza 0.7**, da confermare con lo sviluppatore Unity. I punti aperti sono in fondo.
 - 0.2: il catalogo dello scenario sta nella tabella `scenarios` e la dashboard lo legge da lì (niente copie nella dashboard). Gli eventi non cambiano, `schemaVersion` resta 1.
 - 0.3: abbinamento visore ↔ sessione con codice di 6 cifre e token di sessione; `privacy.accepted` solo se il partecipante non ha già accettato (una volta per partecipante); tolto `aborted_by_trainer` (fuori MVP); le violazioni di zona contano negli errori più frequenti (RF-18); indirizzi reali delle Edge Functions. `schemaVersion` resta 1: nessun client è ancora stato scritto con la versione precedente.
 - 0.4: limite generale ai codici sbagliati (`429`) al posto di "5 tentativi di fila" (con il solo codice il backend non sa a quale sessione si riferisce un tentativo sbagliato); nuovo abbinamento per un visore riavviato; scadenza massima del token a 7 giorni.
 - 0.5: risposta di `events` con `accepted` e `rejected` (un evento sbagliato non blocca gli altri), codici di errore dell'intera richiesta (`400`, `401`, `403`, `413`), massimo 100 eventi per richiesta.
 - 0.6: IRI verificati sul profilo xAPI-SG ufficiale; `error.committed` diventa `failed` su un'attività per codice di errore (il profilo non prevede `interacted` per gli errori); scelta documentata per `initialized`.
+- 0.7: chiusura della sessione dal formatore o dopo 30 minuti di inattività (RF-23); partecipante registrabile con il solo codice, email facoltativa; LRS online scelto (LRS.io di Veracity). Gli eventi non cambiano.
 
 ## Principi
 1. **Solo eventi discreti** (RF-12, RNF-13): nessun evento per frame, nessuna posizione, rotazione o direzione dello sguardo. Mai coordinate nei payload.
@@ -19,8 +20,9 @@ Stato: **bozza 0.6**, da confermare con lo sviluppatore Unity. I punti aperti so
 5. **Nessun evento perso, nessun duplicato** (RNF-9): ogni evento ha un `eventId` generato dal client; il backend ignora gli `eventId` già ricevuti.
 
 ## Concetti
-- **Partecipante**: ha un account creato dal formatore (RF-20) con email e codice partecipante (es. `P-0042`). L'email resta nel sistema di autenticazione (RNF-19): visore, eventi e xAPI conoscono solo il codice, e il visore nemmeno quello.
+- **Partecipante**: registrato dal formatore (RF-20) con un codice partecipante (es. `P-0042`); l'email è facoltativa e serve solo per invitarlo a consultare i propri risultati nella dashboard. L'email resta nel sistema di autenticazione (RNF-19): visore, eventi e xAPI conoscono solo il codice, e il visore nemmeno quello.
 - **Sessione**: creata dal formatore dalla dashboard scegliendo un partecipante (RF-11). Una sessione = un partecipante davanti al visore. Il visore si collega alla sessione con un codice di abbinamento (vedi [Avvio sul visore](#avvio-sul-visore)).
+- **Chiusura della sessione** (RF-23): la chiude il formatore dalla dashboard, oppure il backend da solo dopo **30 minuti di inattività**, cioè senza eventi ricevuti dal visore e senza abbinamenti (conta l'ora di arrivo al server, non quella del visore). Una sessione chiusa non si riapre e non accetta nuovi abbinamenti; il token del visore resta valido ancora 24 ore per svuotare la coda.
 - **Tentativo**: una esecuzione dello scenario dall'inizio alla fine. Una sessione può avere più tentativi (RF-3); lo storico dei tentativi è RF-4.
 - **Catalogo dello scenario**: file di configurazione che elenca obiettivi, punti di decisione, codici di errore con le etichette leggibili e i criteri di superamento (RNF-15). Lo usano il client per lo scenario e la dashboard per le etichette. La dashboard lo legge dal backend, mai da una copia nel proprio codice (vedi [Catalogo dello scenario](#catalogo-dello-scenario-esempio)).
 
@@ -286,5 +288,4 @@ I contenuti reali li fornisce l'esperto di sicurezza (D2): gli ID qui sotto sono
 `passCriteria` è l'unico posto in cui stanno le soglie di superamento (RNF-15).
 
 ## Punti aperti
-- Quale LRS di prova usare online (D1). In locale: SQL LRS di Yet Analytics in Docker.
-- Come si chiude una sessione: dal formatore nella dashboard, automaticamente dopo un tempo di inattività, o entrambi.
+- Nessuno al momento. Decisi in 0.7: chiusura della sessione (vedi Concetti) e LRS di prova (in locale SQL LRS di Yet Analytics in Docker, online LRS.io di Veracity, piano gratuito).

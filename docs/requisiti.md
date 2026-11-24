@@ -9,6 +9,9 @@ Fonte: specifica dei requisiti consegnata il 18/11/2026 (ISO/IEC/IEEE 29148). Qu
 > - Il partecipante ha un account e consulta i propri risultati nella dashboard (nuovi RU-8, RF-20, RF-21, RNF-19; modificati RF-11, RNF-10, RNF-18). Nella specifica i profili dei partecipanti erano fuori perimetro.
 > - L'interruzione della sessione dalla dashboard del formatore resta fuori dall'MVP.
 > - Ogni formatore vede solo i propri studenti e le proprie sessioni; un amministratore vede tutto (nuovo RF-22; modificati Ruoli, RF-17, RNF-11). Nella specifica l'amministratore non era un utente del sistema.
+> - La sessione si chiude dal formatore oppure da sola dopo 30 minuti di inattività (nuovo RF-23). La specifica non diceva come si chiude una sessione.
+> - Il formatore può registrare un partecipante con il solo codice, senza email né invito; l'email serve solo per dare allo studente l'accesso alla dashboard (modificati RF-20, A8).
+> - LRS di prova online: LRS.io di Veracity, piano gratuito (precisata D1).
 
 ## Perimetro
 Dentro: un solo scenario decisionale in VR (emergenza incendio con estintore) per un partecipante alla volta, con obiettivi intermedi, punti e livello; proiezione della vista in aula; tracciamento e valutazione dell'esito; dashboard del formatore in tempo reale; account del partecipante per consultare i propri risultati; invio dei risultati in xAPI a un sistema esterno; struttura che permette di aggiungere scenari senza modificare il resto.
@@ -57,9 +60,10 @@ Componente indicativo: **VR** = client Unity, **BE** = backend, **DB** = dashboa
 | RF-17 | Dashboard | Mostrare per ogni proprio partecipante esito, punteggio, livello ed errori. | RU-5 | DB |
 | RF-18 | Dashboard | Mostrare gli errori più frequenti tra tutte le sessioni dello scenario. | RU-5 | BE, DB |
 | RF-19 | Dashboard | Consentire di scaricare il report di una sessione in PDF. | RU-5 | BE, DB |
-| RF-20 | Account | Consentire al formatore di creare l'account di un partecipante (email e codice partecipante) con invito via email; non è prevista la registrazione libera. | RU-8 | BE, DB |
+| RF-20 | Account | Consentire al formatore di registrare un partecipante con il solo codice partecipante, senza email, per avviare subito una sessione; se il formatore indica anche l'email, il partecipante riceve un invito per accedere alla dashboard (RF-21). Non è prevista la registrazione libera. | RU-8 | BE, DB |
 | RF-21 | Account | Consentire al partecipante autenticato di consultare solo i propri tentativi, con esito, punti, livello ed errori. | RU-8 | BE, DB |
-| RF-22 | Account | Limitare ogni formatore ai propri studenti (quelli che ha invitato) e alle proprie sessioni; consentire all'amministratore di vedere tutto. Gli errori più frequenti (RF-18) restano calcolati su tutte le sessioni, ma come soli conteggi. | RU-5 | BE, DB |
+| RF-22 | Account | Limitare ogni formatore ai propri studenti (quelli che ha registrato o invitato) e alle proprie sessioni; consentire all'amministratore di vedere tutto. Gli errori più frequenti (RF-18) restano calcolati su tutte le sessioni, ma come soli conteggi. | RU-5 | BE, DB |
+| RF-23 | Tracciamento | Chiudere una sessione quando il formatore lo chiede oppure automaticamente dopo 30 minuti senza attività (nessun evento ricevuto dal visore e nessun abbinamento). Una sessione chiusa non si riapre. | RU-4, RU-5 | BE, DB |
 
 ## Requisiti non funzionali
 | ID | Caratteristica (ISO 25010) | Requisito | Fonte |
@@ -99,7 +103,7 @@ Gli ID P-n sono aggiunti qui per comodità; nella specifica le prove non sono nu
 | ID | Prova | Metodo | Requisiti | Criterio di superamento |
 |---|---|---|---|---|
 | P-1 | Esecuzione dello scenario davanti al formatore | Dimostrazione | RF-1, RF-2, RF-3, RF-5, RF-9, RF-10, RNF-7, RNF-18 | Ogni funzione è mostrata funzionante, lo scenario si svolge solo con i controller e l'informativa compare al primo accesso. |
-| P-2 | Sessioni di prova con risultati attesi noti | Test | RF-4, RF-6, RF-7, RF-11, RF-12, RF-13, RF-14 | Eventi, indicatori, punti, livello ed esiti coincidono con i valori attesi. |
+| P-2 | Sessioni di prova con risultati attesi noti | Test | RF-4, RF-6, RF-7, RF-11, RF-12, RF-13, RF-14, RF-23 | Eventi, indicatori, punti, livello ed esiti coincidono con i valori attesi. |
 | P-3 | Dashboard | Test, dimostrazione | RF-16, RF-17, RF-18, RF-19, RF-21, RNF-8 | Dati attesi in tempo reale, vista live in non più di 3 clic, report PDF scaricato; il partecipante vede i propri tentativi. |
 | P-4 | Invio a un sistema di tracciamento di prova | Test | RF-15, RNF-5 | I risultati arrivano al sistema di prova in formato xAPI. |
 | P-5 | Misure di prestazione | Test | RNF-2, RNF-3, RNF-4 | Soglie rispettate durante lo scenario e sulla dashboard. |
@@ -119,8 +123,8 @@ Le prove si svolgono sul prototipo dell'MVP, senza utenti esterni al gruppo; que
 - A5. Il sistema è progettato per accogliere altri scenari, ma l'MVP ne include uno solo.
 - A6. Il limite dell'area di movimento e l'avviso di prossimità li gestisce il sistema del visore.
 - A7. Le soglie numeriche (72 fps, 3 s, 10 sessioni…) sono ipotesi da validare sul prototipo.
-- A8. Ogni partecipante ha un indirizzo email a cui ricevere l'invito (RF-20).
-- D1. È disponibile un sistema di tracciamento di prova (LRS) che riceve i risultati in xAPI.
+- A8. L'email del partecipante è facoltativa: serve solo se deve consultare i propri risultati nella dashboard (RF-20, RF-21).
+- D1. È disponibile un sistema di tracciamento di prova (LRS) che riceve i risultati in xAPI: in locale SQL LRS di Yet Analytics (Docker), online LRS.io di Veracity, piano gratuito.
 - D2. I contenuti normativi e procedurali dello scenario li fornisce un esperto di sicurezza.
 
 ## Glossario
