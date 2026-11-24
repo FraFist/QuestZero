@@ -964,3 +964,105 @@ a.carta {
   color: var(--p-action);
   text-decoration-color: currentColor;
 }
+
+/* ---------------------------------------------------------------------------
+   Errori più frequenti (RF-18): una serie sola, barre orizzontali dal ramo sinistro,
+   al massimo 24px, estremità arrotondata di 4px. I numeri restano scritti accanto.
+   --------------------------------------------------------------------------- */
+.filtro {
+  min-width: 260px;
+}
+.classifica {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--s-2);
+}
+.classifica th,
+.classifica td {
+  padding: 0;
+  vertical-align: middle;
+}
+.classifica-nome {
+  text-align: left;
+  font-weight: 400;
+  width: 34%;
+  padding-right: var(--s-5) !important;
+  line-height: 1.35;
+}
+.classifica-tipo {
+  display: block;
+  font-size: var(--t-label);
+  font-weight: 500;
+  color: var(--p-muted);
+}
+.classifica-barra {
+  width: 46%;
+  border-left: 1px solid rgb(11 16 38 / 0.25);
+}
+.barra-dato {
+  position: relative;
+  display: block;
+  height: 20px;
+  background: var(--p-action);
+  border-radius: 0 4px 4px 0;
+}
+/* Il bersaglio del passaggio è più alto della barra */
+.barra-dato::before {
+  content: '';
+  position: absolute;
+  inset: -8px 0;
+}
+.barra-dato::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  padding: var(--s-1) var(--s-2);
+  border-radius: 6px;
+  background: var(--p-ink);
+  color: #fff;
+  font-size: var(--t-label);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--m-out) var(--ease);
+  z-index: 2;
+}
+.barra-dato:hover::after {
+  opacity: 1;
+  transition-duration: var(--m-in);
+}
+.classifica-valore {
+  width: 8%;
+  text-align: right;
+  font-weight: 500;
+  font-size: var(--t-lead);
+}
+.classifica-sessioni {
+  width: 12%;
+  text-align: right;
+  font-size: var(--t-small);
+  white-space: nowrap;
+}
+@media (max-width: 639px) {
+  .classifica tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s-1) var(--s-3);
+    margin-bottom: var(--s-4);
+  }
+  .classifica-nome {
+    grid-column: 1 / -1;
+    width: auto;
+  }
+  .classifica-barra {
+    width: auto;
+  }
+  .classifica-valore,
+  .classifica-sessioni {
+    width: auto;
+  }
+  .classifica-sessioni {
+    display: none;
+  }
+}

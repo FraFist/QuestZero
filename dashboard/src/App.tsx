@@ -9,6 +9,7 @@ import { Login } from './pages/Login'
 import { TrainerHome } from './pages/trainer/Home'
 import { Studenti } from './pages/trainer/Studenti'
 import { Studente } from './pages/trainer/Studente'
+import { ErroriFrequenti } from './pages/trainer/ErroriFrequenti'
 import { NuovaSessione } from './pages/trainer/NuovaSessione'
 import { Sessione } from './pages/trainer/Sessione'
 import { InPreparazione } from './pages/InPreparazione'
@@ -16,6 +17,7 @@ import { InPreparazione } from './pages/InPreparazione'
 const TRAINER_MENU: MenuItem[] = [
   { to: '/', label: 'Sessioni' },
   { to: '/studenti', label: 'Studenti' },
+  { to: '/errori', label: 'Errori frequenti' },
 ]
 
 function Pages() {
@@ -60,6 +62,7 @@ function Pages() {
           <Route index element={<TrainerHome />} />
           <Route path="studenti" element={<Studenti />} />
           <Route path="studenti/:id" element={<Studente />} />
+          <Route path="errori" element={<ErroriFrequenti />} />
           <Route path="sessioni/nuova" element={<NuovaSessione />} />
           <Route path="sessioni/:id" element={<Sessione />} />
         </Route>
