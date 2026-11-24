@@ -40,7 +40,13 @@ Backend (dalla cartella `backend/`, serve Docker Desktop acceso; la CLI Supabase
 - Porte locali spostate su 4432x (API 44321, DB 44322, Studio http://127.0.0.1:44323, Mailpit 44324) perché Windows riserva il blocco 54282–54381 usato di default da Supabase.
 - `analytics` è spento in `config.toml`: su Windows bloccava `db reset`. La pagina Logs di Studio locale quindi non funziona.
 - `npx supabase db reset` ricrea il DB locale applicando tutte le migrazioni (circa 75 s); lanciarlo prima di `npm test` dopo aver cambiato una migrazione.
-- TODO: avvio dashboard
+- `npm run demo:utenti` — crea nel Supabase locale i formatori e l'amministratore di prova (credenziali in `backend/scripts/utenti-demo.mjs`); da rilanciare dopo ogni `db reset`.
+
+Dashboard (dalla cartella `dashboard/`, con il backend locale acceso):
+- Prima volta: `npm install` e copia `.env.example` in `.env.local` con URL e Publishable key da `npm run status` in `backend/`.
+- `npm run dev` — dashboard su http://127.0.0.1:3000 (porta fissa: è il `site_url` di Supabase).
+- `npm test` — test unitari (Vitest, file `src/**/*.test.ts`); `npm run build` — controllo dei tipi e build; `npm run lint`.
+- Dopo una nuova migrazione rigenera i tipi: da `backend/`, `npx supabase gen types typescript --local --schema public > ../dashboard/src/lib/database.types.ts`.
 
 ## Workflow
 - Francesco è alle prime armi con backend e web: spiega ogni scelta tecnica in parole semplici prima di applicarla, e dimmi cosa devo fare io a mano (account, chiavi, comandi).

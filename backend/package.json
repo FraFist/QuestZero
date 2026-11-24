@@ -11,7 +11,8 @@
     "test:functions": "deno test --allow-net --allow-env --allow-run --allow-read supabase/tests/functions/integration",
     "check": "deno check supabase/functions/pair/index.ts supabase/functions/events/index.ts supabase/functions/invite-participant/index.ts supabase/functions/xapi-sender/index.ts",
     "lrs:start": "docker run -d --rm --name questzero-lrs --network supabase_network_questzero -p 44380:8080 -e LRSQL_API_KEY_DEFAULT=questzero-locale -e LRSQL_API_SECRET_DEFAULT=solo-per-test-locali -e LRSQL_ADMIN_USER_DEFAULT=admin -e LRSQL_ADMIN_PASS_DEFAULT=solo-per-test-locali yetanalytics/lrsql:latest",
-    "lrs:stop": "docker stop questzero-lrs"
+    "lrs:stop": "docker stop questzero-lrs",
+    "demo:utenti": "node scripts/utenti-demo.mjs"
   },
   "type": "commonjs",
   "private": true,
