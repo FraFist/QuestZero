@@ -38,14 +38,13 @@ Regole di accesso nel database (RLS): lo studente vede solo i propri dati, il fo
 - `guida-unity.md`: abbinamento, invio eventi con esempio completo, coda offline, indirizzi.
 
 ### Online (progetto Supabase `xqwcjnvbptrcjjsnmnjc`, regione eu-west-1)
-- Pubblicate il 24/11: migrazioni **1–8** e le 4 Edge Functions (versione di quel momento).
-- **Non ancora pubblicate:** la migrazione 9 (chiusura per inattività) e la nuova `invite-participant` (studente senza email). Vedi il passaggio 1 qui sotto.
+- Allineato al repository il 24/11: migrazioni **1–9** e le 4 Edge Functions nella versione attuale (verificato: 9 migrazioni su 9 uguali, funzioni che rispondono).
 - Le tabelle online sono **vuote**: niente utenti, scenari o informativa.
 
 ## Cosa resta
 
 ### Passaggi manuali online, in ordine
-1. **Aggiornare il backend online** (dalla rete di casa: altre reti possono bloccare le porte 5432/6543 del database). In `backend/`:
+1. **Aggiornare il backend online** — fatto il 24/11. Da ripetere dopo ogni nuova migrazione o funzione (dalla rete di casa: altre reti possono bloccare le porte 5432/6543 del database). In `backend/`:
    `npx supabase db push --remote --dry-run` (controllo), poi `npx supabase db push --remote` e `npx supabase functions deploy`.
 2. **Chiudere la registrazione libera**: sito Supabase → Authentication → Sign In / Providers → disattivare "Allow new users to sign up" (RF-20: si entra solo su invito).
 3. **Account amministratore**: Authentication → Users → Add user → Create new user (email, password, "Auto Confirm User"). Poi in SQL Editor:
