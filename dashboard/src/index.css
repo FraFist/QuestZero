@@ -153,6 +153,29 @@ a {
 .muted {
   color: var(--p-muted);
 }
+/* Testo letto solo dagli screen reader (es. intestazione della colonna dei pulsanti) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Blocco di pagina: titolo, poi contenuto */
+.sezione {
+  display: grid;
+  gap: var(--s-5);
+}
+.sezione > h2 {
+  font-size: var(--t-h3);
+}
+.carta.sezione h2 {
+  font-size: var(--t-h3);
+}
+.carta.sezione .muted {
+  margin-top: var(--s-1);
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -348,6 +371,17 @@ a {
   background: var(--err-bg);
   border-color: var(--err-ink);
 }
+/* Pulsante dentro una riga di tabella */
+.btn-piccolo {
+  height: 36px;
+  padding: 0 var(--s-4);
+  font-size: var(--t-small);
+}
+.tabella .azioni {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
 /* Pulsante secondario sulla barra blu */
 .btn-barra {
   height: 36px;
@@ -412,6 +446,26 @@ a {
 }
 .input[aria-invalid='true'] {
   border-color: var(--err-ink);
+}
+/* Modulo su una riga: campi affiancati e pulsante allineato ai campi (sotto l'etichetta) */
+.modulo-riga {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  gap: var(--s-4);
+  align-items: start;
+}
+.modulo-riga > .btn {
+  margin-top: 28px;
+  height: 48px;
+}
+@media (max-width: 799px) {
+  .modulo-riga {
+    grid-template-columns: 1fr;
+  }
+  .modulo-riga > .btn {
+    margin-top: 0;
+    width: 100%;
+  }
 }
 .stato-modulo {
   font-size: var(--t-small);

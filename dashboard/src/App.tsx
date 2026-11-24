@@ -7,9 +7,13 @@ import { supabase } from './lib/supabase'
 import { Layout, type MenuItem } from './components/Layout'
 import { Login } from './pages/Login'
 import { TrainerHome } from './pages/trainer/Home'
+import { Studenti } from './pages/trainer/Studenti'
 import { InPreparazione } from './pages/InPreparazione'
 
-const TRAINER_MENU: MenuItem[] = [{ to: '/', label: 'Sessioni' }]
+const TRAINER_MENU: MenuItem[] = [
+  { to: '/', label: 'Sessioni' },
+  { to: '/studenti', label: 'Studenti' },
+]
 
 function Pages() {
   const auth = useAuth()
@@ -51,6 +55,7 @@ function Pages() {
       {role === 'trainer' && (
         <Route element={<Layout menu={TRAINER_MENU} />}>
           <Route index element={<TrainerHome />} />
+          <Route path="studenti" element={<Studenti />} />
         </Route>
       )}
       {role === 'participant' && (
