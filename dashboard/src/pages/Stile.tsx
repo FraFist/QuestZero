@@ -12,14 +12,15 @@ import '@fontsource-variable/ibm-plex-sans'
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
 import '@fontsource-variable/public-sans'
+import '@fontsource-variable/archivo/standard.css'
 import './stile.css'
 import logoBianco from '../assets/questzero-orizzontale-bianco.svg'
 import logoBlu from '../assets/questzero-orizzontale-blu.svg'
 
-type Variant = 'a' | 'b' | 'c'
+type Variant = 'a' | 'b' | 'c' | 'd'
 type Tone = 'ok' | 'errore' | 'info'
 
-const NAMES: Record<Variant, string> = { a: 'A: Segnaletica', b: 'B: Sala controllo', c: 'C: Verbale chiaro' }
+const NAMES: Record<Variant, string> = { a: 'A: Segnaletica', b: 'B: Sala controllo', c: 'C: Verbale chiaro', d: 'D: Alta visibilità' }
 
 const LIMIT_S = 600 // tempo massimo del catalogo di prova (10 minuti)
 const ELAPSED_S = 247
@@ -45,7 +46,7 @@ export function Stile() {
   // ?v=b apre direttamente una variante (serve anche al rilevatore di Impeccable)
   const [v, setV] = useState<Variant>(() => {
     const q = new URLSearchParams(window.location.search).get('v')
-    return q === 'b' || q === 'c' ? q : 'a'
+    return q === 'b' || q === 'c' || q === 'd' ? q : 'a'
   })
   const errors = EVENTS.filter((e) => e.tone === 'errore').length
 
@@ -104,10 +105,15 @@ export function Stile() {
           </header>
 
           <section className="sv-live" aria-label="Dal vivo">
+            {v === 'd' && <span className="sv-band" aria-hidden="true" />}
             <dl className="sv-measures">
               <div>
                 <dt>Tempo</dt>
-                <dd>{clock(ELAPSED_S)}</dd>
+                <dd>
+                  {clock(ELAPSED_S)}
+                  {v === 'd' && <small> di {clock(LIMIT_S)}</small>}
+                </dd>
+                {v === 'd' && <Budget />}
                 {v === 'b' && <Gauge value={ELAPSED_S / LIMIT_S} note="limite 10:00" />}
               </div>
               <div>
@@ -296,5 +302,14 @@ function Icon({ tone }: { tone: Tone }) {
     <svg className="sv-ico sv-ico-info" {...common}>
       <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
     </svg>
+  )
+}
+
+/** D: quanto tempo del limite dello scenario è già stato usato (regola presa dalla musicassetta). */
+function Budget() {
+  return (
+    <div className="sv-budget" aria-hidden="true">
+      <span style={{ width: `${(ELAPSED_S / LIMIT_S) * 100}%` }} />
+    </div>
   )
 }

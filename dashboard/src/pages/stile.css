@@ -884,3 +884,202 @@
     border-left: 0;
   }
 }
+
+/* ==================================================================
+   D: Alta visibilità. Mondo: l'abbigliamento ad alta visibilità del magazzino.
+   Il giallo fluo esiste perché una persona si veda in un colpo d'occhio:
+   qui è riservato a ciò che è dal vivo, mai decorativo. Tratto distintivo:
+   la banda riflettente che apre il pannello dal vivo.
+   ================================================================== */
+.sv-d {
+  --font: 'Archivo Variable', system-ui, sans-serif;
+  --font-num: 'Archivo Variable', system-ui, sans-serif;
+  --nav-bg: #1b2230;
+  --nav-ink: #ffffff;
+  --nav-muted: #ffffff;
+  --ground: #f2f3f0;
+  --panel: #ffffff;
+  --ink: #121417;
+  --muted: #555b66;
+  --line: #d6d9dd;
+  --rule: 1px;
+  --accent: #1b2230;
+  --accent-hover: #2c3648;
+  --accent-ink: #ffffff;
+  --ok: #00703c;
+  --ok-bg: #e2f2e9;
+  --bad: #c8102e;
+  --bad-bg: #fbe6e9;
+  --live: #121417;
+  --live-bg: #e6f23a;
+  --live-muted: #4a4f12;
+  --radius: 3px;
+  --row: 44px;
+  --head-weight: 700;
+  --num-size: 72px;
+}
+.sv-d h1 {
+  font-size: 36px;
+  font-weight: 700;
+  font-stretch: 87.5%;
+  letter-spacing: -0.01em;
+}
+.sv-d h2 {
+  font-stretch: 87.5%;
+  font-weight: 700;
+  font-size: 18px;
+}
+/* Pannello dal vivo: fondo giallo fluo, niente bordo, la banda riflettente in alto */
+.sv-d .sv-live {
+  position: relative;
+  background: var(--live-bg);
+  color: var(--live);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 44px 32px 28px;
+  overflow: hidden;
+}
+.sv-band {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  height: 22px;
+  /* due strisce argento riflettenti, separate dal giallo */
+  background:
+    linear-gradient(#c3c8cf, #c3c8cf) top / 100% 7px no-repeat,
+    linear-gradient(#c3c8cf, #c3c8cf) bottom / 100% 7px no-repeat;
+}
+.sv-band::before,
+.sv-band::after {
+  /* il filo chiaro della banda: il riflesso */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgb(255 255 255 / 0.85);
+}
+.sv-band::before {
+  top: 2px;
+}
+.sv-band::after {
+  bottom: 4px;
+}
+.sv-d .sv-measures dt {
+  color: var(--live-muted);
+  font-weight: 600;
+}
+.sv-d .sv-measures dd {
+  font-stretch: 75%;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.sv-d .sv-measures small {
+  color: var(--live-muted);
+  font-stretch: 87.5%;
+  font-weight: 600;
+}
+.sv-d .sv-measures .sv-bad {
+  color: #a8001f;
+}
+.sv-budget {
+  margin-top: 12px;
+  height: 6px;
+  background: rgb(18 20 23 / 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.sv-budget span {
+  display: block;
+  height: 100%;
+  background: var(--live);
+}
+/* Etichetta "In corso": nero su giallo, l'unico altro punto giallo della pagina */
+.sv-d .sv-badge-live {
+  color: var(--live);
+  background: var(--live-bg);
+  font-stretch: 87.5%;
+}
+/* Eventi come righe di un tabellone: colonne fisse, lo stato cambia la riga, non la griglia */
+.sv-d .sv-events {
+  border: 0;
+  border-top: 2px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+}
+.sv-d .sv-ev {
+  padding: 0 4px;
+  border-top-color: var(--line);
+}
+.sv-d .sv-ev-errore {
+  background: var(--bad-bg);
+}
+.sv-d .sv-ev time {
+  font-stretch: 87.5%;
+}
+/* Meno riquadri: tabella e modulo senza bordo esterno, la struttura la danno le righe */
+.sv-d .sv-table-wrap {
+  border: 0;
+  border-top: 2px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+}
+.sv-d .sv-table th {
+  color: var(--ink);
+  font-stretch: 87.5%;
+}
+.sv-d .sv-table .n,
+.sv-d .sv-code {
+  font-stretch: 87.5%;
+  font-weight: 600;
+}
+.sv-d .sv-facts dd {
+  font-weight: 600;
+}
+.sv-d .sv-links a {
+  font-stretch: 87.5%;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Schermi stretti (tutte le direzioni): la barra va a capo e la pagina non sborda */
+@media (max-width: 860px) {
+  .sv-nav {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    padding: 12px 16px 0;
+  }
+  .sv-links {
+    order: 3;
+    flex: 1 0 100%;
+    gap: 20px;
+    min-height: 44px;
+    overflow-x: auto;
+  }
+  .sv-user {
+    margin-left: auto;
+  }
+  .sv-user span {
+    display: none;
+  }
+  .sv-main {
+    padding: 20px 16px 96px;
+  }
+  .sv-live {
+    padding: 20px;
+  }
+  .sv-d .sv-live {
+    padding: 44px 20px 24px;
+  }
+  .sv-measures dd {
+    font-size: 48px !important;
+  }
+}
+.sv-measures dd {
+  white-space: nowrap;
+}
+.sv-measures small {
+  white-space: nowrap;
+}
