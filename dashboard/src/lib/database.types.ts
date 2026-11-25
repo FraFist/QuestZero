@@ -101,14 +101,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "created_at": string,"id": string,"participant_code": string | null,"role": Database["public"]['Enums']["user_role"],"trainer_id": string | null
+                    "created_at": string,"display_name": string | null,"id": string,"participant_code": string | null,"role": Database["public"]['Enums']["user_role"],"trainer_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id": string,"participant_code"?: string | null,"role": Database["public"]['Enums']["user_role"],"trainer_id"?: string | null
+                    "created_at"?: string,"display_name"?: string | null,"id": string,"participant_code"?: string | null,"role": Database["public"]['Enums']["user_role"],"trainer_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"participant_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"trainer_id"?: string | null
+                    "created_at"?: string,"display_name"?: string | null,"id"?: string,"participant_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"trainer_id"?: string | null
                   }
                   Relationships: [
                     {

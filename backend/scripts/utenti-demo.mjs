@@ -11,9 +11,9 @@
 import { execSync } from "node:child_process";
 
 const USERS = [
-  { email: "formatore@questzero.test", password: "prova-formatore-locale", role: "trainer" },
-  { email: "formatore2@questzero.test", password: "prova-formatore-locale", role: "trainer" },
-  { email: "amministratore@questzero.test", password: "prova-admin-locale", role: "admin" },
+  { email: "formatore@questzero.test", password: "prova-formatore-locale", role: "trainer", name: "Formatore di prova" },
+  { email: "formatore2@questzero.test", password: "prova-formatore-locale", role: "trainer", name: "Secondo formatore" },
+  { email: "amministratore@questzero.test", password: "prova-admin-locale", role: "admin", name: "Amministratore di prova" },
 ];
 
 function localEnv() {
@@ -62,11 +62,11 @@ for (const u of USERS) {
     id = (await res.json()).id;
   }
 
-  // Profilo con il ruolo (upsert: se c'è già, resta com'è).
+  // Profilo con ruolo e nome (upsert: se c'è già, si aggiorna).
   const res = await fetch(`${url}/rest/v1/profiles?on_conflict=id`, {
     method: "POST",
-    headers: { ...headers, Prefer: "resolution=ignore-duplicates" },
-    body: JSON.stringify({ id, role: u.role }),
+    headers: { ...headers, Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify({ id, role: u.role, display_name: u.name }),
   });
   if (!res.ok) {
     console.error(`Profilo di ${u.email} non creato: ${res.status} ${await res.text()}`);
