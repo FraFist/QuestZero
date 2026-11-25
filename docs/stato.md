@@ -4,7 +4,7 @@ Aggiornato al **25/11/2026**. Serve a chi riprende il lavoro (anche in una nuova
 Documenti di riferimento: [`requisiti.md`](requisiti.md), [`eventi-xapi.md`](eventi-xapi.md) (contratto, bozza 0.7), [`guida-unity.md`](guida-unity.md). Comandi e regole di lavoro: [`../CLAUDE.md`](../CLAUDE.md).
 
 ## In una riga
-Il **backend** (Supabase) è completo e testato; della **dashboard** sono pronte le pagine del formatore (fasi 1 e 2: dal vivo, risultati, errori frequenti, PDF), mancano studente e amministratore; il **client Unity** è da scrivere (intanto c'è il visore finto). Online il backend c'è ma va riempito con i dati iniziali (passaggi manuali più sotto); la dashboard gira solo in locale.
+Il **backend** (Supabase) è completo e testato; la **dashboard** ha tutte le pagine di formatore, studente e amministratore e gira in locale; il **client Unity** è da scrivere (intanto c'è il visore finto). Online il backend c'è ma manca la migrazione 10 e va riempito con i dati iniziali (passaggi manuali più sotto); la dashboard non è ancora pubblicata.
 
 ## Fatto
 
@@ -20,6 +20,7 @@ Il **backend** (Supabase) è completo e testato; della **dashboard** sono pronte
 | Migrazione 7 — salvataggio eventi | `ingest_events`: salva, aggiorna il tentativo, registra l'informativa, mette in coda gli statement | RF-12, RF-14, RF-15, RNF-9, RNF-18 |
 | Migrazione 8 — invio automatico | pg_cron ogni minuto chiama `xapi-sender` (indirizzo e chiave nel Vault) | RF-15 |
 | Migrazione 9 — chiusura sessioni | Chiusura dal formatore o dopo 30 minuti di inattività (pg_cron ogni minuto) | RF-23 |
+| Migrazione 10 — nomi dei formatori | Colonna display_name per formatori e amministratori, impostata dall'amministratore; mai per gli studenti | RF-22, RNF-19 |
 | Edge Function `pair` | Abbinamento del visore con il codice | contratto "Avvio sul visore" |
 | Edge Function `events` | Controllo degli eventi, traduzione xAPI, salvataggio | RF-12, RF-15, RNF-13 |
 | Edge Function `invite-participant` | Il formatore registra uno studente: con email (invito) o con il solo codice | RF-20, RF-22 |
@@ -38,13 +39,15 @@ Regole di accesso nel database (RLS): lo studente vede solo i propri dati, il fo
 | Risultati dello studente | Esito, punti, livello, errori, tempo e sequenza per tentativo, con il dettaglio degli errori | RF-17, RF-8 |
 | Errori frequenti | Classifica di errori e zone su tutte le sessioni dello scenario, solo conteggi | RF-18, RF-22 |
 | Report PDF | Dalla pagina della sessione: dati, indicatori ed errori di ogni tentativo, generato nel browser (jsPDF) | RF-19, RNF-19 |
+| Studente | Password scelta dal link d'invito, informativa al primo accesso, i propri tentativi | RF-20, RF-21, RNF-18 |
+| Amministratore | Tutte le sessioni; studenti con spostamento tra formatori; formatori con nome e ruolo | RF-22 |
 
-Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans; regole da `.claude/skills/design-taste-frontend` (solo in locale). 54 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
+Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans; regole da `.claude/skills/design-taste-frontend` (solo in locale). 64 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
 
 Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministratore di prova, solo in locale) e `npm run visore:finto -- <codice>` (simula il client Unity).
 
 ### Test del backend (tutti passano)
-- **167** test del database (pgTAP): `npm test`
+- **174** test del database (pgTAP): `npm test`. Presuppongono un database pulito: dopo prove a mano lanciare prima `npx supabase db reset` (e poi `npm run demo:utenti`).
 - **31** test unitari delle funzioni (Deno): `npm run test:unit`
 - **2** test completi contro Supabase locale e LRS di prova (15 passaggi): `npm run test:functions` — coprono anche la prova **P-4** (statement accettati da un LRS reale).
 
@@ -54,7 +57,7 @@ Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministrato
 - `guida-unity.md`: abbinamento, invio eventi con esempio completo, coda offline, indirizzi.
 
 ### Online (progetto Supabase `xqwcjnvbptrcjjsnmnjc`, regione eu-west-1)
-- Allineato al repository il 24/11: migrazioni **1–9** e le 4 Edge Functions nella versione attuale (verificato: 9 migrazioni su 9 uguali, funzioni che rispondono).
+- Allineato al repository il 24/11: migrazioni **1–9** (la **10** è ancora da pubblicare, passaggio 1) e le 4 Edge Functions nella versione attuale (verificato: 9 migrazioni su 9 uguali, funzioni che rispondono).
 - Le tabelle online sono **vuote**: niente utenti, scenari o informativa.
 
 ## Cosa resta
@@ -78,7 +81,7 @@ Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministrato
 10. **Indirizzo della dashboard** (quando sarà pubblicata su `dashboard.questzero.it`): Authentication → URL Configuration (Site URL e Redirect URLs) e `npx supabase secrets set DASHBOARD_URL=https://dashboard.questzero.it DASHBOARD_ORIGIN=https://dashboard.questzero.it`.
 
 ### Da sviluppare
-- **Dashboard**, ancora da fare (in ordine): studente (imposta password dall'invito, informativa al primo accesso RNF-18, propri tentativi RF-21) e amministratore (vista completa, ruoli, spostamento di studenti RF-22); infine pubblicazione su `dashboard.questzero.it` (passaggio manuale 10).
+- **Dashboard**, ancora da fare: pubblicazione su `dashboard.questzero.it` (passaggio manuale 10); ritocchi grafici e di organizzazione dopo la prima simulazione vera. Un formatore si aggiunge dal sito di Supabase (passaggi 3–4), poi gli si dà un nome dalla pagina Formatori.
 - **Client Unity** (`unity/`): seguire `guida-unity.md` e il contratto.
 - **Non implementato** (non richiesto finora): aggiungere l'email in un secondo momento a uno studente registrato con il solo codice.
 
