@@ -3,6 +3,7 @@
 // Lo stato arriva con Realtime: quando il visore si abbina, la pagina cambia da sola.
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { useAuth } from '../../lib/auth-context'
 import { supabase } from '../../lib/supabase'
 import { VistaDalVivo } from '../../components/VistaDalVivo'
 import { ScaricaReport } from '../../components/ScaricaReport'
@@ -23,6 +24,9 @@ type Pairing = { code: string; expiresAt: string } | null
 
 export function Sessione() {
   const { id = '' } = useParams()
+  // Codice e chiusura sono del formatore della sessione: l'amministratore consulta soltanto (RF-22).
+  const auth = useAuth()
+  const isTrainer = auth.status === 'signed_in' && auth.profile.role === 'trainer'
   const location = useLocation()
   const navigate = useNavigate()
   const [session, setSession] = useState<SessionRow | null | undefined>(undefined)
@@ -131,11 +135,18 @@ export function Sessione() {
               }}
             />
           )}
-          {session.status !== 'closed' && <ChiudiSessione sessionId={session.id} />}
+          {isTrainer && session.status !== 'closed' && <ChiudiSessione sessionId={session.id} />}
         </div>
       </div>
 
-      {session.status === 'waiting' && (
+      {!isTrainer && session.status === 'waiting' && (
+        <section className="carta vuoto">
+          <h2>In attesa del visore</h2>
+          <p>Il codice di abbinamento lo vede solo il formatore della sessione.</p>
+        </section>
+      )}
+
+      {isTrainer && session.status === 'waiting' && (
         <CodiceAbbinamento
           pairing={pairing}
           error={pairingError}

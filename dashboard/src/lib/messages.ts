@@ -25,6 +25,13 @@ export function loginErrorMessage(error: ErrorLike): string {
   return 'Accesso non riuscito. Riprova tra poco.'
 }
 
+/** Controllo della nuova password (primo accesso dall'invito): null se va bene. */
+export function validateNewPassword(password: string, repeat: string): string | null {
+  if (password.length < 8) return 'La password deve avere almeno 8 caratteri.'
+  if (password !== repeat) return 'Le due password non coincidono: riscrivile.'
+  return null
+}
+
 const ROLE_LABELS = {
   trainer: 'Formatore',
   participant: 'Studente',

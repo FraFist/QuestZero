@@ -16,7 +16,7 @@ export function Layout({ menu }: { menu: MenuItem[] }) {
     auth.status === 'signed_in'
       ? auth.profile.role === 'participant'
         ? `Studente ${auth.profile.participant_code ?? ''}`
-        : roleLabel(auth.profile.role)
+        : (auth.profile.display_name ?? roleLabel(auth.profile.role))
       : ''
 
   return (

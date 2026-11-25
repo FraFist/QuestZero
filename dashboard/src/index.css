@@ -292,6 +292,13 @@ a {
   gap: var(--s-6);
   align-content: start;
 }
+/* Un figlio di una griglia non si stringe sotto la larghezza del suo contenuto, se non glielo si dice:
+   senza questa regola una tabella larga allarga tutta la pagina invece di scorrere nel suo riquadro. */
+.pagina > *,
+.sezione > *,
+.dal-vivo > * {
+  min-width: 0;
+}
 .pagina-testa {
   display: flex;
   align-items: end;
@@ -527,6 +534,8 @@ a.carta {
 }
 
 .tabella-contenitore {
+  /* position: i testi nascosti (sr-only) restano dentro il riquadro e non allargano la pagina */
+  position: relative;
   background: var(--p-card);
   border: 1px solid var(--p-line);
   border-radius: var(--r-lg);
@@ -1074,4 +1083,49 @@ a.carta {
   align-items: center;
   justify-content: flex-end;
   gap: var(--s-3);
+}
+
+/* Informativa privacy al primo accesso (RNF-18) */
+.informativa {
+  max-width: 760px;
+}
+.informativa-testo {
+  white-space: pre-wrap;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: var(--s-4);
+  border: 1px solid var(--p-line);
+  border-radius: var(--r-sm);
+  background: var(--p-bg);
+  max-width: none;
+}
+.azioni-informativa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+/* Area amministratore: campi dentro le righe delle tabelle */
+.select-tabella,
+.input-tabella {
+  height: 40px;
+  min-width: 200px;
+  width: auto;
+}
+.nome-riga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.aiuto-tabella {
+  display: block;
+  margin-top: var(--s-1);
+  font-size: var(--t-label);
+  color: var(--p-muted);
+  max-width: 32ch;
+}
+.nota-pagina {
+  font-size: var(--t-small);
 }

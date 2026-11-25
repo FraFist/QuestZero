@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { loginErrorMessage, roleLabel } from './messages'
+import { loginErrorMessage, roleLabel, validateNewPassword } from './messages'
 
 describe('loginErrorMessage (login della dashboard, RF-20/RF-22)', () => {
   it('credenziali sbagliate: dice di controllarle', () => {
@@ -21,6 +21,18 @@ describe('loginErrorMessage (login della dashboard, RF-20/RF-22)', () => {
   it('errore sconosciuto: messaggio generico, mai il testo tecnico', () => {
     const msg = loginErrorMessage({ message: 'Database error querying schema' })
     expect(msg).not.toMatch(/Database/)
+  })
+})
+
+describe('validateNewPassword (primo accesso dall\'invito, RF-20)', () => {
+  it('troppo corta', () => {
+    expect(validateNewPassword('1234567', '1234567')).toMatch(/8 caratteri/)
+  })
+  it('le due password non coincidono', () => {
+    expect(validateNewPassword('password-lunga', 'password-lungo')).toMatch(/non coincidono/)
+  })
+  it('valida', () => {
+    expect(validateNewPassword('password-lunga', 'password-lunga')).toBeNull()
   })
 })
 

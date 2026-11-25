@@ -6,6 +6,7 @@ export interface Profile {
   id: string
   role: UserRole
   participant_code: string | null
+  display_name: string | null
 }
 
 export type AuthState =

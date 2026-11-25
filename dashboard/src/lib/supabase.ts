@@ -12,6 +12,20 @@ if (!url || !anonKey) {
   )
 }
 
+// Link dell'email di invito (o di recupero): Supabase riporta qui con "#...&type=invite" nell'indirizzo.
+// Va letto PRIMA di creare il client, che poi pulisce l'indirizzo. Si ricorda finché la password
+// non è stata scelta, anche se la pagina viene ricaricata.
+const PASSWORD_FLAG = 'qz-imposta-password'
+const linkType = new URLSearchParams(window.location.hash.slice(1)).get('type')
+if (linkType === 'invite' || linkType === 'recovery') sessionStorage.setItem(PASSWORD_FLAG, '1')
+
+export function mustSetPassword(): boolean {
+  return sessionStorage.getItem(PASSWORD_FLAG) === '1'
+}
+export function passwordSet(): void {
+  sessionStorage.removeItem(PASSWORD_FLAG)
+}
+
 export const supabase = createClient<Database>(url, anonKey)
 
 export type Tables<T extends keyof Database['public']['Tables']> =

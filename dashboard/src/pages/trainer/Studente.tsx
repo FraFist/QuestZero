@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth-context'
 import { TabellaTentativi } from '../../components/TabellaTentativi'
 import { groupErrors, summarize, type AttemptOverview, type ErrorItem } from '../../lib/results'
 
@@ -14,6 +15,9 @@ interface Data {
 
 export function Studente() {
   const { id = '' } = useParams()
+  // Le sessioni le crea solo il formatore; l'amministratore consulta (RF-22).
+  const auth = useAuth()
+  const isTrainer = auth.status === 'signed_in' && auth.profile.role === 'trainer'
   const [data, setData] = useState<Data | null | undefined>(undefined)
 
   useEffect(() => {
@@ -70,9 +74,11 @@ export function Studente() {
           </h1>
           <p>{riassunto(s)}</p>
         </div>
-        <Link className="btn btn-primario" to={`/sessioni/nuova?studente=${id}`}>
-          Crea sessione
-        </Link>
+        {isTrainer && (
+          <Link className="btn btn-primario" to={`/sessioni/nuova?studente=${id}`}>
+            Crea sessione
+          </Link>
+        )}
       </div>
 
       {data.attempts.length === 0 ? (

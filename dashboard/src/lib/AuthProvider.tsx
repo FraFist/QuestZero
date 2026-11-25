@@ -10,7 +10,7 @@ async function loadState(session: Session | null): Promise<AuthState> {
   if (!session) return { status: 'signed_out' }
   const { data } = await supabase
     .from('profiles')
-    .select('id, role, participant_code')
+    .select('id, role, participant_code, display_name')
     .eq('id', session.user.id)
     .maybeSingle()
   return data
