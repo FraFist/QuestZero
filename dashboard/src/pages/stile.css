@@ -371,9 +371,9 @@
 }
 .sv-ev {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr) 36px;
+  grid-template-columns: 20px minmax(0, 1fr) auto 36px;
   gap: 12px;
-  align-items: baseline;
+  align-items: center;
   padding: 0 16px;
   min-height: var(--row);
   align-content: center;
@@ -715,4 +715,171 @@
   .sv-badge-live::before {
     animation: none;
   }
+}
+
+/* ------------------------------------------------------------------ rifiniture comuni */
+.sv {
+  scrollbar-color: var(--line) var(--ground);
+}
+.sv-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.sv-facts {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 36px;
+}
+.sv-facts dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+.sv-facts dd {
+  margin: 2px 0 0;
+  font-weight: 500;
+}
+.sv-ico {
+  display: block;
+}
+.sv-ico-ok {
+  color: var(--ok);
+}
+.sv-ico-errore {
+  color: var(--bad);
+}
+.sv-ico-info {
+  color: var(--muted);
+}
+.sv-stop-n {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  padding-right: 8px;
+}
+.sv-stop-t {
+  margin-top: -6px;
+}
+.sv-legend {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.sv-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sv-legend li::before {
+  content: '';
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+}
+.sv-legend-ok::before {
+  background: var(--ok);
+}
+.sv-legend-errore::before {
+  background: var(--bad);
+}
+.sv-legend-now::before {
+  width: 2px !important;
+  height: 18px !important;
+  background: var(--live);
+}
+
+/* ------------------------------------------------------------------ A: più cartello */
+.sv-a h1 {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.sv-a .sv-live,
+.sv-a .sv-events,
+.sv-a .sv-table-wrap {
+  border: 0;
+  box-shadow:
+    0 1px 2px rgb(15 20 32 / 0.06),
+    0 10px 28px -14px rgb(15 20 32 / 0.22);
+}
+.sv-a .sv-live {
+  border-top: 6px solid var(--accent);
+  padding: 28px 32px 32px;
+}
+.sv-a .sv-measures dd {
+  font-size: 72px;
+  font-weight: 600;
+}
+.sv-a .sv-stop::before {
+  height: 6px;
+  top: 8px;
+}
+.sv-a .sv-dot {
+  width: 22px;
+  height: 22px;
+  border-width: 5px;
+}
+.sv-a .sv-exit .sv-arrow {
+  border-left-color: var(--ok);
+  border-top-width: 13px;
+  border-bottom-width: 13px;
+  border-left-width: 22px;
+}
+.sv-a .sv-exit .sv-stop-n {
+  color: var(--ok);
+}
+.sv-a .sv-badge {
+  border-radius: 2px;
+}
+.sv-a .sv-table th {
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+/* ------------------------------------------------------------------ B: più strumento */
+.sv-b .sv-live,
+.sv-b .sv-events,
+.sv-b .sv-table-wrap {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+.sv-b .sv-measures dd {
+  font-size: 48px;
+}
+.sv-b .sv-facts dd {
+  font-family: var(--font-num);
+  font-size: 15px;
+}
+.sv-b .sv-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+}
+.sv-b .sv-ev {
+  min-height: 40px;
+}
+
+/* ------------------------------------------------------------------ C: più documento */
+.sv-c h1 {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.sv-c .sv-facts {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.sv-c .sv-track-bar {
+  height: 36px;
+}
+.sv-c .sv-tick {
+  width: 5px;
+}
+.sv-c .sv-measures dd {
+  font-weight: 650;
 }

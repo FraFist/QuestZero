@@ -24,12 +24,12 @@ const NAMES: Record<Variant, string> = { a: 'A: Segnaletica', b: 'B: Sala contro
 const LIMIT_S = 600 // tempo massimo del catalogo di prova (10 minuti)
 const ELAPSED_S = 247
 
-const EVENTS: { t: number; at: string; text: string; tone: Tone; points?: number }[] = [
-  { t: 0, at: '10:15:02', text: 'Tentativo 1 iniziato', tone: 'info' },
-  { t: 38, at: '10:15:40', text: "Obiettivo raggiunto: Dare l'allarme (1 di 2)", tone: 'ok', points: 10 },
-  { t: 113, at: '10:16:55', text: 'Entrato in zona di pericolo: Zona di fumo denso', tone: 'errore' },
-  { t: 149, at: '10:17:31', text: "Scelta sbagliata: Scelta dell'estintore, acqua", tone: 'errore' },
-  { t: 198, at: '10:18:20', text: "Scelta corretta: Scelta dell'estintore, CO2", tone: 'ok', points: 15 },
+const EVENTS: { t: number; at: string; text: string; short: string; tone: Tone; points?: number }[] = [
+  { t: 0, at: '10:15:02', text: 'Tentativo 1 iniziato', short: 'Partenza', tone: 'info' },
+  { t: 38, at: '10:15:40', text: "Obiettivo raggiunto: Dare l'allarme (1 di 2)", short: 'Allarme', tone: 'ok', points: 10 },
+  { t: 113, at: '10:16:55', text: 'Entrato in zona di pericolo: Zona di fumo denso', short: 'Fumo denso', tone: 'errore' },
+  { t: 149, at: '10:17:31', text: "Scelta sbagliata: Scelta dell'estintore, acqua", short: 'Acqua', tone: 'errore' },
+  { t: 198, at: '10:18:20', text: "Scelta corretta: Scelta dell'estintore, CO2", short: 'CO2', tone: 'ok', points: 15 },
 ]
 
 const ATTEMPTS = [
@@ -72,12 +72,26 @@ export function Stile() {
         <main className="sv-main">
           <header className="sv-head">
             <div>
-              <h1>
-                Sessione di <span className="sv-code">P-0042</span>
-              </h1>
-              <p className="sv-meta">
-                Emergenza incendio in magazzino, creata alle 10:12. <span className="sv-badge sv-badge-live">In corso</span>
-              </p>
+              <div className="sv-title">
+                <h1>
+                  Sessione di <span className="sv-code">P-0042</span>
+                </h1>
+                <span className="sv-badge sv-badge-live">In corso</span>
+              </div>
+              <dl className="sv-facts">
+                <div>
+                  <dt>Scenario</dt>
+                  <dd>Emergenza incendio in magazzino</dd>
+                </div>
+                <div>
+                  <dt>Formatore</dt>
+                  <dd>Anna Bianchi</dd>
+                </div>
+                <div>
+                  <dt>Visore collegato</dt>
+                  <dd>10:14</dd>
+                </div>
+              </dl>
             </div>
             <div className="sv-actions">
               <button type="button" className="sv-btn sv-btn-second">Scarica report PDF</button>
@@ -121,8 +135,9 @@ export function Stile() {
               <ol className="sv-events">
                 {[...EVENTS].reverse().map((e) => (
                   <li key={e.at + e.text} className={`sv-ev sv-ev-${e.tone}`}>
-                    <time>{e.at}</time>
+                    <Icon tone={e.tone} />
                     <span>{e.text}</span>
+                    <time>{e.at}</time>
                     {e.points ? <b>+{e.points}</b> : <i />}
                   </li>
                 ))}
@@ -214,12 +229,14 @@ function Route() {
         {EVENTS.map((e) => (
           <li key={e.at + e.text} className={`sv-stop sv-stop-${e.tone}`} title={e.text}>
             <span className="sv-dot" />
+            <span className="sv-stop-n">{e.short}</span>
             <span className="sv-stop-t">{clock(e.t)}</span>
           </li>
         ))}
         <li className="sv-stop sv-exit">
           <span className="sv-arrow" />
-          <span className="sv-stop-t">Uscita</span>
+          <span className="sv-stop-n">Uscita</span>
+          <span className="sv-stop-t">da raggiungere</span>
         </li>
       </ol>
     </div>
@@ -243,6 +260,37 @@ function Track() {
         <span>5:00</span>
         <span>10:00, limite dello scenario</span>
       </div>
+      <ul className="sv-legend">
+        <li className="sv-legend-ok">Obiettivo</li>
+        <li className="sv-legend-errore">Errore</li>
+        <li className="sv-legend-now">Adesso, {clock(ELAPSED_S)}</li>
+      </ul>
     </div>
+  )
+}
+
+/** Icone degli eventi: SVG disegnati con lo stesso tratto (2px, estremità arrotondate). */
+function Icon({ tone }: { tone: Tone }) {
+  const common = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+  if (tone === 'ok') {
+    return (
+      <svg className="sv-ico sv-ico-ok" {...common}>
+        <circle cx="12" cy="12" r="9" />
+        <path d="m8 12.5 2.8 2.8L16 9.8" />
+      </svg>
+    )
+  }
+  if (tone === 'errore') {
+    return (
+      <svg className="sv-ico sv-ico-errore" {...common}>
+        <path d="M10.3 4.2 2.9 17a2 2 0 0 0 1.7 3h14.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z" />
+        <path d="M12 9.5v4M12 17h.01" />
+      </svg>
+    )
+  }
+  return (
+    <svg className="sv-ico sv-ico-info" {...common}>
+      <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
+    </svg>
   )
 }
