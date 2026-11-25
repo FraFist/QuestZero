@@ -42,7 +42,7 @@ Regole di accesso nel database (RLS): lo studente vede solo i propri dati, il fo
 | Studente | Password scelta dal link d'invito, informativa al primo accesso, i propri tentativi | RF-20, RF-21, RNF-18 |
 | Amministratore | Tutte le sessioni; studenti con spostamento tra formatori; formatori con nome e ruolo | RF-22 |
 
-Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans; regole da `.claude/skills/design-taste-frontend` (solo in locale). 64 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
+Grafica: accesso tutto Blu Elettrico, pagine interne neutre con barra blu, Reddit Sans (fondamenta grafiche da rivedere). 64 test unitari (Vitest). Misura RNF-4 in locale: eventi in pagina tra 0,2 e 2,4 s.
 
 Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministratore di prova, solo in locale) e `npm run visore:finto -- <codice>` (simula il client Unity).
 
