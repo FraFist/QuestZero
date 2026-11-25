@@ -9,7 +9,7 @@ web
 ## Users
 
 - **Formatore** (utente principale della dashboard). Può essere sia una persona interna all'azienda che forma i colleghi (per esempio il responsabile della sicurezza o il capo magazzino), sia un formatore esterno o un ente di formazione che va nelle aziende. La dashboard deve andare bene per entrambi.
-- **Studente** (partecipante alla simulazione): fa lo scenario nel visore; dalla dashboard vede solo i propri risultati (RF-21), se il formatore gli ha dato l'accesso con l'email.
+- **Studente** (partecipante alla simulazione): fa lo scenario nel visore; dalla dashboard vede solo i propri risultati (RF-21), se il formatore gli ha dato l'accesso con l'email. Dopo l'MVP, preparando il prodotto per il mercato, è probabile che lo studente abbia più spazio (gamification e corsi a lui dedicati): le fondamenta grafiche devono reggere anche pagine pensate per lui, non solo per il formatore.
 - **Amministratore**: vede tutto, dà un nome ai formatori, sposta gli studenti tra formatori (RF-22).
 
 ## Product Purpose
