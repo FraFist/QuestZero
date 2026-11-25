@@ -57,7 +57,7 @@ Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministrato
 - `guida-unity.md`: abbinamento, invio eventi con esempio completo, coda offline, indirizzi.
 
 ### Online (progetto Supabase `xqwcjnvbptrcjjsnmnjc`, regione eu-west-1)
-- Migrazioni **1–10** allineate al repository (la 10 pubblicata il 25/11, verificato: 10 su 10 uguali); e le 4 Edge Functions nella versione attuale (verificato: 9 migrazioni su 9 uguali, funzioni che rispondono).
+- Migrazioni **1–10** allineate al repository (la 10 pubblicata il 25/11, verificato: 10 su 10 uguali). Le 4 Edge Functions sono quelle pubblicate il 24/11, ancora uguali al repository (verificato allora: funzioni che rispondono).
 - Le tabelle online sono **vuote**: niente utenti, scenari o informativa.
 
 ## Cosa resta
