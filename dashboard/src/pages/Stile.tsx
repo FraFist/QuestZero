@@ -42,7 +42,11 @@ const ATTEMPTS = [
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
 export function Stile() {
-  const [v, setV] = useState<Variant>('a')
+  // ?v=b apre direttamente una variante (serve anche al rilevatore di Impeccable)
+  const [v, setV] = useState<Variant>(() => {
+    const q = new URLSearchParams(window.location.search).get('v')
+    return q === 'b' || q === 'c' ? q : 'a'
+  })
   const errors = EVENTS.filter((e) => e.tone === 'errore').length
 
   return (

@@ -10,7 +10,7 @@
   --font-num: 'Barlow Semi Condensed', 'Barlow', sans-serif;
   --nav-bg: #2b50ff;
   --nav-ink: #ffffff;
-  --nav-muted: rgb(255 255 255 / 0.78);
+  --nav-muted: #ffffff;
   --ground: #eceef2;
   --panel: #ffffff;
   --ink: #0f1420;
@@ -303,12 +303,6 @@
   height: 7px;
   border-radius: 50%;
   background: currentColor;
-  animation: sv-pulse 1.6s ease-in-out infinite;
-}
-@keyframes sv-pulse {
-  50% {
-    opacity: 0.3;
-  }
 }
 
 /* dal vivo */
@@ -711,11 +705,6 @@
     grid-template-columns: 1fr;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .sv-badge-live::before {
-    animation: none;
-  }
-}
 
 /* ------------------------------------------------------------------ rifiniture comuni */
 .sv {
@@ -810,6 +799,7 @@
 }
 .sv-a .sv-live {
   border-top: 6px solid var(--accent);
+  border-radius: 0;
   padding: 28px 32px 32px;
 }
 .sv-a .sv-measures dd {
@@ -882,4 +872,15 @@
 }
 .sv-c .sv-measures dd {
   font-weight: 650;
+}
+
+/* B su schermi stretti: le note sotto gli indicatori hanno bisogno di spazio tra le righe */
+@media (max-width: 860px) {
+  .sv-b .sv-measures {
+    row-gap: 44px;
+  }
+  .sv-b .sv-measures > div:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
 }
