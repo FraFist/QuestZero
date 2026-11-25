@@ -7,6 +7,7 @@ import { useAuth } from './lib/auth-context'
 import { mustSetPassword, supabase } from './lib/supabase'
 import { Layout, type MenuItem } from './components/Layout'
 import { Login } from './pages/Login'
+import { Stile } from './pages/Stile'
 import { TrainerHome } from './pages/trainer/Home'
 import { Studenti } from './pages/trainer/Studenti'
 import { Studente } from './pages/trainer/Studente'
@@ -112,6 +113,8 @@ function Pages() {
 }
 
 export default function App() {
+  // Pagina di confronto delle direzioni grafiche: esiste solo in sviluppo (npm run dev).
+  if (import.meta.env.DEV && window.location.pathname === '/stile') return <Stile />
   return (
     <AuthProvider>
       <BrowserRouter>

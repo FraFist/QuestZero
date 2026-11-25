@@ -1,0 +1,718 @@
+/*
+  Pagina Stile: tre direzioni grafiche a confronto. Tutto è sotto .sv, nulla tocca le pagine vere.
+  Ogni direzione definisce le stesse variabili; la struttura comune le usa.
+*/
+
+/* ------------------------------------------------------------------ direzioni */
+.sv-a {
+  /* Segnaletica: colori dei cartelli di sicurezza, angoli vivi, linee spesse */
+  --font: 'Barlow', system-ui, sans-serif;
+  --font-num: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+  --nav-bg: #2b50ff;
+  --nav-ink: #ffffff;
+  --nav-muted: rgb(255 255 255 / 0.78);
+  --ground: #eceef2;
+  --panel: #ffffff;
+  --ink: #0f1420;
+  --muted: #4d5566;
+  --line: #c9ced8;
+  --rule: 2px;
+  --accent: #2b50ff;
+  --accent-hover: #1f3fe0;
+  --accent-ink: #ffffff;
+  --ok: #00703c;
+  --ok-bg: #e2f2e9;
+  --bad: #c8102e;
+  --bad-bg: #fbe6e9;
+  --live: #2b50ff;
+  --live-bg: #e3e9ff;
+  --radius: 2px;
+  --row: 52px;
+  --head-weight: 600;
+  --num-size: 64px;
+}
+.sv-b {
+  /* Sala controllo: scuro, denso, misure in carattere a larghezza fissa */
+  --font: 'IBM Plex Sans Variable', system-ui, sans-serif;
+  --font-num: 'IBM Plex Mono', ui-monospace, monospace;
+  --nav-bg: #080c1d;
+  --nav-ink: #e8ebf5;
+  --nav-muted: #8d96b4;
+  --ground: #0f1530;
+  --panel: #151c3b;
+  --ink: #e8ebf5;
+  --muted: #9aa3c0;
+  --line: #263056;
+  --rule: 1px;
+  --accent: #5c7cff;
+  --accent-hover: #7590ff;
+  --accent-ink: #080c1d;
+  --ok: #3ddc97;
+  --ok-bg: rgb(61 220 151 / 0.14);
+  --bad: #ff6b6b;
+  --bad-bg: rgb(255 107 107 / 0.14);
+  --live: #8fb0ff;
+  --live-bg: rgb(92 124 255 / 0.18);
+  --radius: 6px;
+  --row: 38px;
+  --head-weight: 500;
+  --num-size: 44px;
+}
+.sv-c {
+  /* Verbale chiaro: bianco, inchiostro blu notte, tabelle con righe nette */
+  --font: 'Public Sans Variable', system-ui, sans-serif;
+  --font-num: 'Public Sans Variable', system-ui, sans-serif;
+  --nav-bg: #ffffff;
+  --nav-ink: #14213d;
+  --nav-muted: #4b5563;
+  --ground: #ffffff;
+  --panel: #ffffff;
+  --ink: #14213d;
+  --muted: #4b5563;
+  --line: #d9dee7;
+  --rule: 1px;
+  --accent: #2b50ff;
+  --accent-hover: #1f3fe0;
+  --accent-ink: #ffffff;
+  --ok: #0a6b3b;
+  --ok-bg: #e3f4ea;
+  --bad: #b3261e;
+  --bad-bg: #fbe9e7;
+  --live: #2b50ff;
+  --live-bg: #eaefff;
+  --radius: 4px;
+  --row: 46px;
+  --head-weight: 650;
+  --num-size: 52px;
+}
+
+/* ------------------------------------------------------------------ struttura comune */
+.sv {
+  min-height: 100vh;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.sv ::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.sv :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.sv-switch {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #000;
+  border-radius: 8px;
+  font-family: system-ui, sans-serif;
+}
+.sv-switch button {
+  font: inherit;
+  font-size: 13px;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+.sv-switch button[aria-pressed='true'] {
+  background: #fff;
+  color: #000;
+}
+
+.sv-app {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.sv-nav {
+  background: var(--nav-bg);
+  color: var(--nav-ink);
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 0 32px;
+  height: 64px;
+}
+.sv-logo {
+  height: 24px;
+}
+.sv-links {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  align-self: stretch;
+}
+.sv-links a {
+  display: flex;
+  align-items: center;
+  color: var(--nav-muted);
+  font-weight: 500;
+  font-size: 15px;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+.sv-links a[aria-current] {
+  color: var(--nav-ink);
+  border-bottom-color: currentColor;
+}
+.sv-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--nav-muted);
+}
+
+.sv-main {
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px;
+  display: grid;
+  gap: 28px;
+}
+.sv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sv h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: var(--head-weight);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+.sv h2 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: var(--head-weight);
+}
+.sv-meta {
+  margin: 6px 0 0;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sv-code {
+  font-family: var(--font-num);
+  font-weight: 500;
+}
+.sv-actions,
+.sv-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* pulsanti */
+.sv-btn {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius);
+  border: var(--rule) solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+.sv-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.sv-btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.sv-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.sv-btn-second {
+  background: var(--panel);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.sv-btn-second:hover {
+  border-color: var(--ink);
+}
+.sv-btn-danger {
+  background: var(--panel);
+  color: var(--bad);
+  border-color: var(--bad);
+}
+.sv-btn-danger:hover {
+  background: var(--bad-bg);
+}
+.sv-btn-ghost {
+  height: 32px;
+  font-size: 14px;
+  background: transparent;
+  color: var(--nav-ink);
+  border-color: var(--nav-muted);
+}
+
+/* etichette di stato: sempre testo, mai solo colore */
+.sv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+}
+.sv-badge-ok {
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+.sv-badge-errore {
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+.sv-badge-neutro {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--muted) 14%, transparent);
+}
+.sv-badge-live {
+  color: var(--live);
+  background: var(--live-bg);
+}
+.sv-badge-live::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: sv-pulse 1.6s ease-in-out infinite;
+}
+@keyframes sv-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* dal vivo */
+.sv-live {
+  background: var(--panel);
+  border: var(--rule) solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  display: grid;
+  gap: 24px;
+}
+.sv-measures {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+.sv-measures dt {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.sv-measures dd {
+  margin: 4px 0 0;
+  font-family: var(--font-num);
+  font-size: var(--num-size);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.sv-measures small {
+  font-size: 0.4em;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+.sv-measures .sv-bad {
+  color: var(--bad);
+}
+
+/* colonne e blocchi */
+.sv-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.sv-cols > *,
+.sv-main > * {
+  min-width: 0;
+}
+
+/* eventi */
+.sv-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--panel);
+  border: var(--rule) solid var(--line);
+  border-radius: var(--radius);
+}
+.sv-ev {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 36px;
+  gap: 12px;
+  align-items: baseline;
+  padding: 0 16px;
+  min-height: var(--row);
+  align-content: center;
+  border-top: 1px solid var(--line);
+}
+.sv-ev:first-child {
+  border-top: 0;
+}
+.sv-ev time {
+  font-family: var(--font-num);
+  font-size: 14px;
+  color: var(--muted);
+}
+.sv-ev b {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ok);
+  text-align: right;
+}
+.sv-ev-errore span {
+  color: var(--bad);
+  font-weight: 500;
+}
+
+/* modulo */
+.sv-form {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.sv-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.sv-input {
+  font: inherit;
+  font-size: 16px;
+  height: 44px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--panel);
+  border: var(--rule) solid var(--line);
+  border-radius: var(--radius);
+}
+.sv-input::placeholder {
+  color: var(--muted);
+}
+.sv-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.sv-input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+.sv-err {
+  color: var(--bad);
+  font-weight: 400;
+}
+.sv-empty {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border: var(--rule) dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 14px;
+}
+.sv-empty strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+/* tabella */
+.sv-table-wrap {
+  overflow-x: auto;
+  background: var(--panel);
+  border: var(--rule) solid var(--line);
+  border-radius: var(--radius);
+}
+.sv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.sv-table th {
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 10px 16px;
+  border-bottom: var(--rule) solid var(--line);
+  white-space: nowrap;
+}
+.sv-table td {
+  height: var(--row);
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.sv-table tr:last-child td {
+  border-bottom: 0;
+}
+.sv-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.sv-table .n {
+  text-align: right;
+  font-family: var(--font-num);
+}
+
+/* ------------------------------------------------------------------ A: via di fuga */
+.sv-a h1,
+.sv-a h2 {
+  font-family: var(--font-num);
+}
+.sv-a .sv-live {
+  border-top: 6px solid var(--accent);
+}
+.sv-route ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+}
+.sv-stop {
+  position: relative;
+  flex: 1;
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+/* il tratto del percorso tra una tappa e l'altra */
+.sv-stop::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 16px;
+  right: 0;
+  height: 4px;
+  background: var(--ink);
+}
+.sv-exit {
+  flex: 0 0 auto;
+}
+.sv-exit::before {
+  display: none;
+}
+.sv-dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 4px solid var(--ink);
+  z-index: 1;
+}
+.sv-stop-ok .sv-dot {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+.sv-stop-errore .sv-dot {
+  background: var(--bad);
+  border-color: var(--bad);
+}
+.sv-arrow {
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  border-left: 18px solid var(--muted);
+}
+.sv-stop-t {
+  font-family: var(--font-num);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------------ B: sala controllo */
+.sv-b .sv-app {
+  grid-template-rows: none;
+  grid-template-columns: 232px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.sv-b .sv-nav {
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 32px;
+  padding: 24px 16px;
+  border-right: 1px solid var(--line);
+}
+.sv-b .sv-logo {
+  height: 22px;
+  align-self: flex-start;
+  margin-left: 8px;
+}
+.sv-b .sv-links {
+  flex-direction: column;
+  gap: 2px;
+  align-self: auto;
+}
+.sv-b .sv-links a {
+  padding: 8px;
+  border-bottom: 0;
+  border-radius: var(--radius);
+}
+.sv-b .sv-links a[aria-current] {
+  background: var(--panel);
+}
+.sv-b .sv-user {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: auto;
+  padding: 0 8px;
+}
+.sv-b .sv-main {
+  max-width: none;
+  padding: 24px 28px;
+  gap: 20px;
+}
+.sv-b .sv-measures {
+  gap: 0;
+}
+.sv-b .sv-measures > div {
+  padding: 0 24px;
+  border-left: 1px solid var(--line);
+}
+.sv-b .sv-measures > div:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.sv-gauge {
+  margin-top: 12px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  position: relative;
+}
+.sv-gauge span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.sv-gauge .sv-gauge-bad {
+  background: var(--bad);
+}
+.sv-gauge em {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.sv-b .sv-live {
+  padding-bottom: 40px;
+}
+
+/* ------------------------------------------------------------------ C: linea del tempo */
+.sv-c .sv-nav {
+  border-bottom: 3px solid var(--accent);
+}
+.sv-c .sv-live,
+.sv-c .sv-events,
+.sv-c .sv-table-wrap {
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+.sv-c .sv-live {
+  padding-left: 0;
+  padding-right: 0;
+}
+.sv-c .sv-table th {
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.sv-track-bar {
+  position: relative;
+  height: 28px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border-radius: 2px;
+}
+.sv-track-done {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--live-bg);
+  border-right: 2px solid var(--live);
+}
+.sv-tick {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 4px;
+  margin-left: -2px;
+  border-radius: 2px;
+}
+.sv-tick-ok {
+  background: var(--ok);
+}
+.sv-tick-errore {
+  background: var(--bad);
+}
+.sv-now {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--live);
+}
+.sv-track-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media (max-width: 860px) {
+  .sv-cols {
+    grid-template-columns: 1fr;
+  }
+  .sv-measures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sv-b .sv-app {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-badge-live::before {
+    animation: none;
+  }
+}
