@@ -3,7 +3,7 @@ import { NavLink, Outlet } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
 import { roleLabel } from '../lib/messages'
-import logoBianco from '../assets/questzero-orizzontale-bianco.svg'
+import logoBlu from '../assets/questzero-orizzontale-blu.svg'
 
 export interface MenuItem {
   to: string
@@ -24,7 +24,7 @@ export function Layout({ menu }: { menu: MenuItem[] }) {
       <header className="barra">
         <div className="barra-interno">
           <NavLink to="/" className="barra-logo" aria-label="QuestZero, pagina iniziale">
-            <img src={logoBianco} alt="" />
+            <img src={logoBlu} alt="" />
           </NavLink>
           <nav aria-label="Menu principale">
             {menu.map((item) => (

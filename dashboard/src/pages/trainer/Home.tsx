@@ -1,9 +1,11 @@
 // Pagina iniziale del formatore: sessioni aperte in alto (vista della sessione in 1 clic, RNF-8),
 // sessioni chiuse recenti sotto. Si aggiorna da sola quando cambia una sessione (Realtime).
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { supabase } from '../../lib/supabase'
 import { formatDateTime } from '../../lib/format'
+import { ElencoSessioni } from '../../components/ElencoSessioni'
+import type { SessionListItem } from '../../lib/sessionList'
 import { SESSION_COLUMNS, loadScenarioNames, statusLabel, type SessionRow } from '../../lib/sessions'
 
 export function TrainerHome() {
@@ -40,16 +42,23 @@ export function TrainerHome() {
   }, [])
 
   const open = sessions?.filter((s) => s.status !== 'closed') ?? []
-  const closed = sessions?.filter((s) => s.status === 'closed') ?? []
+  const items = useMemo<SessionListItem[]>(
+    () =>
+      (sessions ?? []).map((s) => ({
+        id: s.id,
+        status: s.status,
+        scenarioId: s.scenario_id,
+        createdAt: s.created_at,
+        participantCode: s.participant?.participant_code ?? '—',
+      })),
+    [sessions],
+  )
   const scenario = (id: string) => names.get(id) ?? id
 
   return (
     <>
       <div className="pagina-testa">
-        <div>
-          <h1>Sessioni</h1>
-          <p>Apri una sessione in corso per seguirla dal vivo.</p>
-        </div>
+        <h1>Sessioni</h1>
         <Link className="btn btn-primario" to="/sessioni/nuova">
           Nuova sessione
         </Link>
@@ -91,41 +100,10 @@ export function TrainerHome() {
             )}
           </section>
 
-          {closed.length > 0 && (
+          {items.length > 0 && (
             <section className="sezione">
-              <h2>Chiuse di recente</h2>
-              <div className="tabella-contenitore">
-                <table className="tabella">
-                  <thead>
-                    <tr>
-                      <th scope="col">Studente</th>
-                      <th scope="col">Scenario</th>
-                      <th scope="col">Creata</th>
-                      <th scope="col">Chiusa</th>
-                      <th scope="col">
-                        <span className="sr-only">Azioni</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {closed.map((s) => (
-                      <tr key={s.id}>
-                        <td>
-                          <span className="codice">{s.participant?.participant_code ?? '—'}</span>
-                        </td>
-                        <td>{scenario(s.scenario_id)}</td>
-                        <td className="muted">{formatDateTime(s.created_at)}</td>
-                        <td className="muted">{s.closed_at ? formatDateTime(s.closed_at) : '—'}</td>
-                        <td className="azioni">
-                          <Link className="btn btn-secondario btn-piccolo" to={`/sessioni/${s.id}`}>
-                            Apri
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <h2>Tutte le sessioni</h2>
+              <ElencoSessioni sessions={items} scenarioNames={names} />
             </section>
           )}
         </>

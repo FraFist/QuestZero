@@ -1,11 +1,11 @@
 // Amministratore: tutte le sessioni di tutti i formatori (RF-22, la RLS gli mostra tutto).
-// Le sessioni le crea solo il formatore: qui si consultano e si aprono (vista dal vivo, PDF).
+// Le sessioni le crea solo il formatore: qui si cercano, si filtrano e si aprono.
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
 import { supabase } from '../../lib/supabase'
-import { formatDateTime } from '../../lib/format'
-import { loadScenarioNames, statusLabel, type SessionStatus } from '../../lib/sessions'
+import { loadScenarioNames, type SessionStatus } from '../../lib/sessions'
 import { staffLabel } from '../../lib/admin'
+import { ElencoSessioni } from '../../components/ElencoSessioni'
+import type { SessionListItem } from '../../lib/sessionList'
 
 interface Row {
   id: string
@@ -18,7 +18,7 @@ interface Row {
 }
 
 export function AdminSessioni() {
-  const [rows, setRows] = useState<Row[] | null>(null)
+  const [items, setItems] = useState<SessionListItem[] | null>(null)
   const [names, setNames] = useState<Map<string, string>>(new Map())
   const [loadError, setLoadError] = useState(false)
 
@@ -31,12 +31,21 @@ export function AdminSessioni() {
           'id, status, scenario_id, created_at, trainer_id, participant:profiles!sessions_participant_id_fkey(participant_code), trainer:profiles!sessions_trainer_id_fkey(display_name)',
         )
         .order('created_at', { ascending: false })
-        .limit(100),
+        .limit(500),
       loadScenarioNames(),
     ]).then(([res, n]) => {
       if (!current) return
       setLoadError(Boolean(res.error))
-      setRows((res.data ?? []) as Row[])
+      setItems(
+        ((res.data ?? []) as Row[]).map((s) => ({
+          id: s.id,
+          status: s.status,
+          scenarioId: s.scenario_id,
+          createdAt: s.created_at,
+          participantCode: s.participant?.participant_code ?? '—',
+          trainerName: staffLabel(s.trainer?.display_name, s.trainer_id),
+        })),
+      )
       setNames(n)
     })
     return () => {
@@ -47,10 +56,7 @@ export function AdminSessioni() {
   return (
     <>
       <div className="pagina-testa">
-        <div>
-          <h1>Sessioni</h1>
-          <p>Tutte le sessioni di tutti i formatori, dalla più recente.</p>
-        </div>
+        <h1>Sessioni</h1>
       </div>
 
       {loadError && (
@@ -59,52 +65,10 @@ export function AdminSessioni() {
         </div>
       )}
 
-      {rows === null ? (
+      {items === null ? (
         <p className="muted">Caricamento…</p>
-      ) : rows.length === 0 ? (
-        <section className="carta vuoto">
-          <h2>Nessuna sessione</h2>
-          <p>Le sessioni compaiono qui quando un formatore le crea.</p>
-        </section>
       ) : (
-        <div className="tabella-contenitore">
-          <table className="tabella">
-            <thead>
-              <tr>
-                <th scope="col">Studente</th>
-                <th scope="col">Formatore</th>
-                <th scope="col">Scenario</th>
-                <th scope="col">Stato</th>
-                <th scope="col">Creata</th>
-                <th scope="col">
-                  <span className="sr-only">Azioni</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((s) => (
-                <tr key={s.id}>
-                  <td>
-                    <span className="codice">{s.participant?.participant_code ?? '—'}</span>
-                  </td>
-                  <td>{staffLabel(s.trainer?.display_name, s.trainer_id)}</td>
-                  <td>{names.get(s.scenario_id) ?? s.scenario_id}</td>
-                  <td>
-                    <span className={`esito ${s.status === 'active' ? 'esito-attivo' : 'esito-neutro'}`}>
-                      {statusLabel(s.status)}
-                    </span>
-                  </td>
-                  <td className="muted">{formatDateTime(s.created_at)}</td>
-                  <td className="azioni">
-                    <Link className="btn btn-secondario btn-piccolo" to={`/sessioni/${s.id}`}>
-                      Apri
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ElencoSessioni sessions={items} showTrainer scenarioNames={names} />
       )}
     </>
   )

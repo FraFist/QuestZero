@@ -36,8 +36,8 @@
   --display-tracking: -0.03em;
 
   /* Tipografia (desktop / telefono più sotto) */
-  --t-h1: 2.5rem;
-  --t-h2: 1.75rem;
+  --t-h1: 1.75rem;
+  --t-h2: 1.375rem;
   --t-h3: 1.25rem;
   --t-lead: 1.125rem;
   --t-body: 1rem;
@@ -56,11 +56,11 @@
   --s-9: 96px;
 
   /* Raggi "soft" */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 20px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 8px;
 
-  --nav: 72px;
+  --nav: 60px;
   --gut: 48px;
   --larghezza: 1280px;
 
@@ -81,7 +81,7 @@
 
 @media (max-width: 639px) {
   :root {
-    --t-h1: 1.875rem;
+    --t-h1: 1.5rem;
     --t-h2: 1.5rem;
     --t-h3: 1.125rem;
     --nav: 56px;
@@ -146,8 +146,7 @@ a {
   font-variant-numeric: tabular-nums;
 }
 .codice {
-  font-family: var(--font-mono);
-  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   letter-spacing: 0;
 }
 .muted {
@@ -187,12 +186,13 @@ a {
 }
 
 /* ---------------------------------------------------------------------------
-   Barra in alto: Blu Elettrico pieno, logo bianco, parole a 15px/500,
-   la pagina corrente con una barra di 2px sotto la parola.
+   Barra in alto: bianca con un bordo sottile. Il blu è un accento: segna solo
+   la pagina corrente (testo e linea di 2px sotto la parola).
    --------------------------------------------------------------------------- */
 .barra {
-  background: var(--p-action);
-  color: #fff;
+  background: var(--p-card);
+  color: var(--p-ink);
+  border-bottom: 1px solid var(--p-line);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -212,7 +212,7 @@ a {
   flex: none;
 }
 .barra-logo img {
-  height: 28px;
+  height: 24px;
   width: auto;
   display: block;
 }
@@ -227,7 +227,7 @@ a {
   position: relative;
   display: flex;
   align-items: center;
-  color: #fff;
+  color: var(--p-muted);
   text-decoration: none;
   font-size: 0.9375rem;
   font-weight: 500;
@@ -241,10 +241,16 @@ a {
   right: 0;
   bottom: 0;
   height: 2px;
-  background: #fff;
+  background: var(--p-action);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--m-out) var(--ease);
+}
+.barra nav a[aria-current='page'] {
+  color: var(--p-action);
+}
+.barra nav a:hover {
+  color: var(--p-ink);
 }
 .barra nav a[aria-current='page']::after {
   transform: scaleX(1);
@@ -254,9 +260,6 @@ a {
     transform: scaleX(1);
     transition-duration: var(--m-in);
   }
-}
-.barra :focus-visible {
-  outline-color: #fff;
 }
 .barra-utente {
   display: flex;
@@ -389,18 +392,17 @@ a {
   width: 1%;
   white-space: nowrap;
 }
-/* Pulsante secondario sulla barra blu */
+/* Pulsante "Esci" nella barra */
 .btn-barra {
-  height: 36px;
-  padding: 0 var(--s-4);
+  height: 32px;
+  padding: 0 var(--s-3);
   font-size: var(--t-small);
   background: transparent;
-  color: #fff;
-  border-color: rgb(255 255 255 / 0.55);
+  color: var(--p-ink);
+  border-color: var(--p-line);
 }
 .btn-barra:hover:not(:disabled) {
-  background: rgb(255 255 255 / 0.12);
-  border-color: #fff;
+  border-color: var(--p-ink);
 }
 
 /* ---------------------------------------------------------------------------
@@ -544,18 +546,20 @@ a.carta {
 .tabella {
   width: 100%;
   border-collapse: collapse;
+  font-size: var(--t-small);
 }
 .tabella th {
   text-align: left;
   font-size: var(--t-label);
   font-weight: 500;
   color: var(--p-muted);
-  padding: var(--s-4) var(--s-5) var(--s-3);
+  padding: var(--s-3) var(--s-4) var(--s-2);
   border-bottom: 1px solid var(--p-line);
   white-space: nowrap;
 }
 .tabella td {
-  padding: var(--s-4) var(--s-5);
+  height: 48px;
+  padding: var(--s-2) var(--s-4);
   border-bottom: 1px solid var(--p-line);
   vertical-align: middle;
 }
@@ -590,6 +594,15 @@ a.carta {
 .esito-attivo {
   color: var(--p-action);
   background: rgb(43 80 255 / 0.1);
+  gap: 6px;
+}
+/* "In corso": un pallino fermo, la scritta dice già lo stato */
+.esito-attivo::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 .sopratitolo {
   margin-bottom: var(--s-3);
@@ -629,6 +642,8 @@ a.carta {
   align-self: center;
 }
 .codice-grande {
+  font-family: var(--font-mono);
+  font-weight: 500;
   font-size: clamp(3rem, 7vw, 5.5rem);
   line-height: 1;
   letter-spacing: 0.02em;
@@ -863,12 +878,6 @@ a.carta {
   height: 8px;
   border-radius: 50%;
   background: #fff;
-  animation: pulsa 1.6s ease-in-out infinite;
-}
-@keyframes pulsa {
-  50% {
-    opacity: 0.25;
-  }
 }
 
 .eventi > h2 {
@@ -1128,4 +1137,89 @@ a.carta {
 }
 .nota-pagina {
   font-size: var(--t-small);
+}
+
+/* ---------------------------------------------------------------------------
+   Elenco delle sessioni: barra di ricerca e filtri, righe cliccabili
+   --------------------------------------------------------------------------- */
+.elenco {
+  display: grid;
+  gap: var(--s-3);
+}
+.strumenti {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.input-strumenti {
+  height: 36px;
+  font-size: var(--t-small);
+  width: auto;
+  padding: 0 var(--s-3);
+}
+input.input-strumenti {
+  width: 220px;
+}
+.conteggio {
+  margin-left: auto;
+  font-size: var(--t-small);
+  color: var(--p-muted);
+}
+.link-pulsante {
+  font: inherit;
+  font-size: var(--t-small);
+  color: var(--p-action);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.vuoto-elenco {
+  padding: var(--s-5) var(--s-4);
+  border: 1px solid var(--p-line);
+  border-radius: var(--r-md);
+  background: var(--p-card);
+  color: var(--p-muted);
+  font-size: var(--t-small);
+}
+.tabella-cliccabile tbody tr {
+  cursor: pointer;
+  transition: background-color var(--m-out) var(--ease);
+}
+.tabella-cliccabile tbody tr:hover {
+  background: rgb(43 80 255 / 0.04);
+}
+.tabella-cliccabile tbody tr:hover .freccia {
+  color: var(--p-action);
+}
+.link-riga {
+  color: var(--p-ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+.link-riga:focus-visible {
+  outline-offset: 4px;
+}
+.freccia {
+  width: 1%;
+  color: var(--p-muted);
+  padding-left: 0 !important;
+}
+.freccia svg {
+  display: block;
+}
+.errori-riga {
+  color: var(--err-ink);
+  font-weight: 500;
+}
+@media (max-width: 639px) {
+  input.input-strumenti {
+    width: 100%;
+  }
+  .conteggio {
+    margin-left: 0;
+  }
 }
