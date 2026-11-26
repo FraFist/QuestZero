@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { supabase, passwordSet } from '../lib/supabase'
 import { validateNewPassword } from '../lib/messages'
 import logoBianco from '../assets/questzero-orizzontale-bianco.svg'
+import simbolo from '../assets/questzero-simbolo-bianco.svg'
 
 export function ImpostaPassword({ onDone }: { onDone: () => void }) {
   const [password, setPassword] = useState('')
@@ -33,17 +34,22 @@ export function ImpostaPassword({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="accesso">
+      <img className="accesso-rilievo" src={simbolo} alt="" aria-hidden="true" />
       <div className="accesso-logo">
         <img src={logoBianco} alt="QuestZero" />
       </div>
 
-      <p className="accesso-titolo">Benvenuto in QuestZero.</p>
+      <div className="accesso-racconto">
+        <p className="accesso-titolo">Benvenuto in QuestZero.</p>
+        <p className="accesso-sottotitolo">Le emergenze si provano nel visore. I risultati si leggono qui.</p>
+      </div>
 
+      <div className="accesso-colonna">
       <main className="accesso-targa">
-        <h1>Scegli la password</h1>
-        <p className="accesso-nota">
-          La userai insieme alla tua email per vedere i risultati delle tue simulazioni.
-        </p>
+        <div className="accesso-intesta">
+          <h1>Scegli la password</h1>
+          <p>La userai con la tua email per entrare.</p>
+        </div>
         <form className="modulo" onSubmit={onSubmit} noValidate>
           <div className="campo">
             <label htmlFor="nuova-password">Nuova password</label>
@@ -76,6 +82,7 @@ export function ImpostaPassword({ onDone }: { onDone: () => void }) {
           </p>
         </form>
       </main>
+      </div>
     </div>
   )
 }

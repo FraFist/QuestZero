@@ -708,74 +708,164 @@ a.carta {
 }
 
 /* ---------------------------------------------------------------------------
-   Pagina di accesso: tutta Blu Elettrico, come un cartello. La frase grande a sinistra,
-   il modulo su una targa bianca a destra. Stessi caratteri e campi del resto della dashboard.
+   Pagina di accesso: tutta Blu Elettrico. A sinistra il racconto (titolo, tre punti),
+   a destra il modulo su una targa bianca. In basso a sinistra il simbolo Z in rilievo,
+   bianco molto trasparente: intero e non ruotato, come vuole la guida del marchio.
    --------------------------------------------------------------------------- */
 .accesso {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
   background: var(--p-action);
   color: #fff;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 27rem);
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
   grid-template-rows: auto 1fr;
-  column-gap: var(--s-8);
-  padding: var(--s-7) clamp(var(--s-5), 6vw, 96px);
+  column-gap: var(--s-9);
+  padding: var(--s-6) clamp(var(--s-5), 5vw, 80px) var(--s-7);
+}
+.accesso > * {
+  position: relative;
+  min-width: 0;
 }
 .accesso :focus-visible {
   outline-color: #fff;
+}
+.accesso-rilievo {
+  position: absolute !important;
+  left: -6%;
+  bottom: -18%;
+  width: min(62vw, 760px);
+  height: auto;
+  opacity: 0.08;
+  pointer-events: none;
+  user-select: none;
 }
 .accesso-logo {
   grid-column: 1 / -1;
 }
 .accesso-logo img {
-  height: 36px;
+  height: 28px;
   width: auto;
   display: block;
 }
+.accesso-racconto {
+  align-self: center;
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-7) 0;
+}
 .accesso-titolo {
-  align-self: end;
-  font-size: clamp(2.5rem, 5vw, 4.75rem);
-  font-weight: var(--display-weight);
-  letter-spacing: -0.045em;
-  line-height: 1.02;
-  max-width: 12ch;
-  padding-bottom: var(--s-4);
+  font-size: clamp(2.75rem, 5.2vw, 4.75rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  max-width: 11ch;
   text-wrap: balance;
 }
+.accesso-sottotitolo {
+  font-size: var(--t-lead);
+  color: #fff;
+  max-width: 52ch;
+}
+.accesso-punti {
+  list-style: none;
+  margin: var(--s-7) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-5);
+  max-width: 46rem;
+}
+.accesso-punti li {
+  display: grid;
+  gap: var(--s-1);
+  padding-top: var(--s-3);
+  border-top: 1px solid rgb(255 255 255 / 0.35);
+  font-size: var(--t-small);
+}
+.accesso-punti strong {
+  font-weight: 600;
+}
+.accesso-punti span {
+  color: #fff;
+}
+.accesso-colonna {
+  align-self: center;
+  display: grid;
+  gap: var(--s-4);
+}
 .accesso-targa {
-  align-self: end;
   background: var(--p-card);
   color: var(--p-ink);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-md);
   padding: var(--s-6);
   display: grid;
   gap: var(--s-5);
+  box-shadow: 0 24px 48px -24px rgb(11 16 38 / 0.45);
 }
 .accesso-targa :focus-visible {
   outline-color: var(--p-action);
 }
-.accesso-targa h1 {
-  font-size: var(--t-h2);
+.accesso-intesta h1 {
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.accesso-intesta p {
+  margin-top: var(--s-1);
+  font-size: var(--t-small);
+  color: var(--p-muted);
 }
 .accesso-targa .btn {
   width: 100%;
 }
+.campo-riga {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+}
 .accesso-nota {
   font-size: var(--t-small);
-  color: var(--p-muted);
+  color: #fff;
 }
-@media (max-width: 799px) {
+@media (max-width: 899px) {
   .accesso {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto;
     row-gap: var(--s-6);
-    padding: var(--s-6) var(--s-4);
+    padding: var(--s-5) var(--s-4) var(--s-7);
+  }
+  /* Sul telefono il modulo viene subito dopo il titolo; i tre punti vanno in fondo */
+  .accesso-racconto {
+    display: contents;
   }
   .accesso-titolo {
-    padding-bottom: 0;
+    order: 1;
+    padding-top: var(--s-4);
+  }
+  .accesso-sottotitolo {
+    order: 2;
+    margin-top: calc(var(--s-4) * -1);
+  }
+  .accesso-colonna {
+    order: 3;
+  }
+  .accesso-punti {
+    order: 4;
+  }
+  .accesso-punti {
+    grid-template-columns: 1fr;
+    margin-top: var(--s-5);
+    gap: var(--s-4);
   }
   .accesso-targa {
     padding: var(--s-5);
+  }
+  .accesso-rilievo {
+    width: 110vw;
+    bottom: -8%;
   }
 }
 
