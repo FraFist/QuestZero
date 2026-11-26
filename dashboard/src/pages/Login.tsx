@@ -39,14 +39,17 @@ export function Login() {
         navigate('/', { replace: true })
       }
       const riduci = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (!document.startViewTransition || riduci) {
+      // Scheda in secondo piano: il browser annullerebbe la transizione, quindi si passa subito.
+      if (!document.startViewTransition || riduci || document.hidden) {
         vai()
         return
       }
       const root = document.documentElement
       root.classList.add('vt-accesso')
       const transizione = document.startViewTransition(() => flushSync(vai))
-      void transizione.finished.finally(() => root.classList.remove('vt-accesso'))
+      // Se il browser annulla la transizione, la navigazione avviene comunque: nessun errore da mostrare.
+      transizione.ready.catch(() => {})
+      void transizione.finished.catch(() => {}).finally(() => root.classList.remove('vt-accesso'))
     }, DURATA_USCITA)
     return () => clearTimeout(timer)
   }, [leaving, navigate])
