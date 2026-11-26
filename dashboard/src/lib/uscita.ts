@@ -1,9 +1,9 @@
 // Uscita animata dalla pagina di accesso: dopo un login riuscito la pagina resta a schermo
-// per DURATA_USCITA ms, il tempo dell'animazione, poi si passa alla dashboard.
+// per DURATA_USCITA ms (lo scatto della freccia), poi parte la transizione verso la dashboard.
 // Vive fuori da React perché, appena il login riesce, App sostituisce l'albero delle pagine
 // e la pagina di accesso viene ricreata: lo stato di un componente andrebbe perso.
 
-export const DURATA_USCITA = 500
+export const DURATA_USCITA = 260
 
 let finoA = 0
 

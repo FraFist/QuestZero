@@ -1488,7 +1488,7 @@ input.input-strumenti {
   animation: none;
 }
 .accesso-uscita .simbolo-freccia {
-  animation: simbolo-scatta 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: simbolo-scatta 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 @keyframes simbolo-scatta {
   to {
@@ -1496,16 +1496,25 @@ input.input-strumenti {
     opacity: 0;
   }
 }
-.accesso-uscita .accesso-logo,
-.accesso-uscita .accesso-racconto,
-.accesso-uscita .accesso-colonna,
-.accesso-uscita .accesso-punti {
-  animation: pagina-esce 420ms cubic-bezier(0.4, 0, 1, 1) both;
+/* Il passaggio alla dashboard: la pagina blu sale come un sipario (View Transitions).
+   .vt-accesso è messa su <html> solo durante questo passaggio, così le altre navigazioni non cambiano. */
+.vt-accesso::view-transition-old(root) {
+  z-index: 2;
+  animation: vt-sipario 520ms cubic-bezier(0.7, 0, 0.3, 1) both;
 }
-@keyframes pagina-esce {
+.vt-accesso::view-transition-new(root) {
+  z-index: 1;
+  animation: vt-entra 460ms cubic-bezier(0.2, 0.8, 0.2, 1) 160ms both;
+}
+@keyframes vt-sipario {
   to {
+    transform: translateY(-100%);
+  }
+}
+@keyframes vt-entra {
+  from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(12px);
   }
 }
 
@@ -1514,11 +1523,7 @@ input.input-strumenti {
   .accesso-punti li,
   .targa-contenuto,
   .scossa,
-  .accesso-uscita .simbolo-freccia,
-  .accesso-uscita .accesso-logo,
-  .accesso-uscita .accesso-racconto,
-  .accesso-uscita .accesso-colonna,
-  .accesso-uscita .accesso-punti {
+  .accesso-uscita .simbolo-freccia {
     animation: none;
   }
 }

@@ -2,6 +2,7 @@
 // Non esiste la registrazione libera (RF-20): gli account li crea il formatore o l'amministratore.
 // "Password dimenticata?" manda un link di recupero; la pagina ImpostaPassword fa scegliere la nuova.
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { flushSync } from 'react-dom'
 import { Navigate, useNavigate } from 'react-router'
 import { DURATA_USCITA, avviaUscita, fineUscita, inUscita } from '../lib/uscita'
 import { supabase } from '../lib/supabase'
@@ -29,9 +30,23 @@ export function Login() {
 
   useEffect(() => {
     if (!leaving) return
+    // Prima scatta la freccia della Z, poi la pagina blu sale come un sipario e scopre la
+    // dashboard (View Transitions del browser). Senza quella funzione, o con "riduci animazioni",
+    // si passa direttamente.
     const timer = setTimeout(() => {
-      fineUscita()
-      navigate('/', { replace: true })
+      const vai = () => {
+        fineUscita()
+        navigate('/', { replace: true })
+      }
+      const riduci = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!document.startViewTransition || riduci) {
+        vai()
+        return
+      }
+      const root = document.documentElement
+      root.classList.add('vt-accesso')
+      const transizione = document.startViewTransition(() => flushSync(vai))
+      void transizione.finished.finally(() => root.classList.remove('vt-accesso'))
     }, DURATA_USCITA)
     return () => clearTimeout(timer)
   }, [leaving, navigate])
