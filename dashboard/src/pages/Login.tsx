@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
 import { loginErrorMessage } from '../lib/messages'
 import logoBianco from '../assets/questzero-orizzontale-bianco.svg'
-import simbolo from '../assets/questzero-simbolo-bianco.svg'
+import { SimboloAnimato } from '../components/SimboloAnimato'
 
 const PUNTI = [
   { titolo: 'Si impara facendo', testo: 'Situazioni di rischio vissute nel visore, senza rischi veri.' },
@@ -28,7 +28,7 @@ export function Login() {
 
   return (
     <div className="accesso">
-      <img className="accesso-rilievo" src={simbolo} alt="" aria-hidden="true" />
+      <SimboloAnimato className="accesso-rilievo" />
 
       <div className="accesso-logo">
         <img src={logoBianco} alt="QuestZero" />

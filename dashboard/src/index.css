@@ -737,9 +737,52 @@ a.carta {
   bottom: -18%;
   width: min(62vw, 760px);
   height: auto;
+  color: #fff;
   opacity: 0.08;
   pointer-events: none;
   user-select: none;
+}
+
+/* Il simbolo si disegna una volta: punto (0-0,2 s), linea della Z (0,15-0,75 s), freccia (0,7-0,9 s).
+   Sulla pagina di accesso tutto è più lento (circa 1,4 s), perché il simbolo è grande e sullo sfondo. */
+.simbolo-punto {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: simbolo-punto 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.simbolo-via {
+  stroke-dasharray: 1;
+  animation: simbolo-via 900ms cubic-bezier(0.65, 0, 0.35, 1) 250ms both;
+}
+.simbolo-freccia {
+  animation: simbolo-freccia 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 1100ms both;
+}
+@keyframes simbolo-punto {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes simbolo-via {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes simbolo-freccia {
+  from {
+    transform: translateX(-18px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .simbolo-punto,
+  .simbolo-via,
+  .simbolo-freccia {
+    animation: none;
+  }
 }
 .accesso-logo {
   grid-column: 1 / -1;

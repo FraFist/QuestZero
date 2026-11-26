@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { supabase, passwordSet } from '../lib/supabase'
 import { validateNewPassword } from '../lib/messages'
 import logoBianco from '../assets/questzero-orizzontale-bianco.svg'
-import simbolo from '../assets/questzero-simbolo-bianco.svg'
+import { SimboloAnimato } from '../components/SimboloAnimato'
 
 export function ImpostaPassword({ onDone }: { onDone: () => void }) {
   const [password, setPassword] = useState('')
@@ -34,7 +34,7 @@ export function ImpostaPassword({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="accesso">
-      <img className="accesso-rilievo" src={simbolo} alt="" aria-hidden="true" />
+      <SimboloAnimato className="accesso-rilievo" />
       <div className="accesso-logo">
         <img src={logoBianco} alt="QuestZero" />
       </div>
