@@ -49,7 +49,8 @@ export function TrainerHome() {
         status: s.status,
         scenarioId: s.scenario_id,
         createdAt: s.created_at,
-        participantCode: s.participant?.participant_code ?? '—',
+        // Studente spostato a un altro formatore: la sessione resta di chi l'ha creata (RF-22).
+        participantCode: s.participant?.participant_code ?? 'Studente spostato',
       })),
     [sessions],
   )
@@ -77,10 +78,9 @@ export function TrainerHome() {
           <section className="sezione">
             <h2>Aperte</h2>
             {open.length === 0 ? (
-              <div className="carta vuoto">
-                <h3>Nessuna sessione aperta</h3>
-                <p>Crea una sessione per uno studente: ricevi il codice da inserire nel visore.</p>
-              </div>
+              <p className="vuoto-elenco">
+                Nessuna sessione aperta. Con Nuova sessione ricevi il codice da inserire nel visore.
+              </p>
             ) : (
               <div className="elenco-sessioni">
                 {open.map((s) => (
@@ -88,7 +88,7 @@ export function TrainerHome() {
                     <span className={`esito ${s.status === 'active' ? 'esito-attivo' : 'esito-neutro'}`}>
                       {statusLabel(s.status)}
                     </span>
-                    <h3 className="codice">{s.participant?.participant_code ?? '—'}</h3>
+                    <h3 className="codice">{s.participant?.participant_code ?? 'Studente spostato'}</h3>
                     <p className="muted">
                       {scenario(s.scenario_id)}
                       <br />

@@ -102,7 +102,7 @@ export function Sessione() {
     )
   }
 
-  const code = session.participant?.participant_code ?? '—'
+  const code = session.participant?.participant_code ?? 'studente spostato'
 
   return (
     <>

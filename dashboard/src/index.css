@@ -1178,7 +1178,8 @@ input.input-strumenti {
   text-underline-offset: 0.2em;
 }
 .vuoto-elenco {
-  padding: var(--s-5) var(--s-4);
+  max-width: none;
+  padding: var(--s-4);
   border: 1px solid var(--p-line);
   border-radius: var(--r-md);
   background: var(--p-card);
@@ -1222,4 +1223,26 @@ input.input-strumenti {
   .conteggio {
     margin-left: 0;
   }
+}
+
+/* Telefono: il menu va su una seconda riga della barra, la tabella scorre di lato */
+@media (max-width: 639px) {
+  .barra-interno {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-top: var(--s-3);
+  }
+  .barra nav {
+    order: 3;
+    flex: 1 0 100%;
+    min-height: 44px;
+    overflow-x: auto;
+  }
+  .barra-utente {
+    margin-left: auto;
+  }
+}
+.tabella-cliccabile td {
+  white-space: nowrap;
 }
