@@ -1,8 +1,9 @@
 // Accesso con email e password (Supabase Auth), per formatori, studenti e amministratori.
 // Non esiste la registrazione libera (RF-20): gli account li crea il formatore o l'amministratore.
 // "Password dimenticata?" manda un link di recupero; la pagina ImpostaPassword fa scegliere la nuova.
-import { useState, type FormEvent } from 'react'
-import { Navigate } from 'react-router'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Navigate, useNavigate } from 'react-router'
+import { DURATA_USCITA, avviaUscita, fineUscita, inUscita } from '../lib/uscita'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth-context'
 import { loginErrorMessage } from '../lib/messages'
@@ -21,13 +22,26 @@ const PUNTI = [
 export function Login() {
   const auth = useAuth()
   const [mode, setMode] = useState<'accesso' | 'recupero'>('accesso')
+  const navigate = useNavigate()
+  const entrato = auth.status === 'signed_in' || auth.status === 'no_profile'
+  // Login appena riuscito: la pagina resta a schermo il tempo dell'animazione d'uscita.
+  const leaving = entrato && inUscita()
 
-  if (auth.status === 'signed_in' || auth.status === 'no_profile') {
+  useEffect(() => {
+    if (!leaving) return
+    const timer = setTimeout(() => {
+      fineUscita()
+      navigate('/', { replace: true })
+    }, DURATA_USCITA)
+    return () => clearTimeout(timer)
+  }, [leaving, navigate])
+
+  if (entrato && !leaving) {
     return <Navigate to="/" replace />
   }
 
   return (
-    <div className="accesso">
+    <div className={leaving ? 'accesso accesso-uscita' : 'accesso'}>
       <SimboloAnimato className="accesso-rilievo" />
 
       <div className="accesso-logo">
@@ -49,11 +63,14 @@ export function Login() {
 
       <div className="accesso-colonna">
         <main className="accesso-targa">
-          {mode === 'accesso' ? (
-            <ModuloAccesso onForgot={() => setMode('recupero')} />
-          ) : (
-            <ModuloRecupero onBack={() => setMode('accesso')} />
-          )}
+          {/* key: al cambio di modulo il contenuto si ricrea e la sua entrata si anima */}
+          <div className="targa-contenuto" key={mode}>
+            {mode === 'accesso' ? (
+              <ModuloAccesso onForgot={() => setMode('recupero')} />
+            ) : (
+              <ModuloRecupero onBack={() => setMode('accesso')} />
+            )}
+          </div>
         </main>
         <p className="accesso-nota">Non hai un account? Lo crea il tuo formatore o l'amministratore.</p>
       </div>
@@ -66,6 +83,7 @@ function ModuloAccesso({ onForgot }: { onForgot: () => void }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -73,7 +91,18 @@ function ModuloAccesso({ onForgot }: { onForgot: () => void }) {
     setSending(true)
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     setSending(false)
-    if (error) setError(loginErrorMessage(error))
+    if (!error) {
+      avviaUscita()
+      return
+    }
+    setError(loginErrorMessage(error))
+    // Breve scatto laterale: si riavvia anche se l'errore si ripete.
+    const form = formRef.current
+    if (form) {
+      form.classList.remove('scossa')
+      void form.offsetWidth
+      form.classList.add('scossa')
+    }
   }
 
   return (
@@ -82,7 +111,7 @@ function ModuloAccesso({ onForgot }: { onForgot: () => void }) {
         <h1>Accedi alla dashboard</h1>
         <p>Per formatori, studenti e amministratori.</p>
       </div>
-      <form className="modulo" onSubmit={onSubmit} noValidate>
+      <form className="modulo" ref={formRef} onSubmit={onSubmit} noValidate>
         <div className="campo">
           <label htmlFor="email">Email</label>
           <input
@@ -93,6 +122,7 @@ function ModuloAccesso({ onForgot }: { onForgot: () => void }) {
             placeholder="nome@azienda.it"
             required
             value={email}
+            aria-invalid={error ? true : undefined}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -110,6 +140,7 @@ function ModuloAccesso({ onForgot }: { onForgot: () => void }) {
             autoComplete="current-password"
             required
             value={password}
+            aria-invalid={error ? true : undefined}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>

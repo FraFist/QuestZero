@@ -7,6 +7,7 @@ import { useAuth } from './lib/auth-context'
 import { mustSetPassword, supabase } from './lib/supabase'
 import { Layout, type MenuItem } from './components/Layout'
 import { Login } from './pages/Login'
+import { inUscita } from './lib/uscita'
 import { Stile } from './pages/Stile'
 import { TrainerHome } from './pages/trainer/Home'
 import { Studenti } from './pages/trainer/Studenti'
@@ -74,7 +75,7 @@ function Pages() {
   const role = auth.profile.role
   return (
     <Routes>
-      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={inUscita() ? <Login /> : <Navigate to="/" replace />} />
       {role === 'trainer' && (
         <Route element={<Layout menu={TRAINER_MENU} />}>
           <Route index element={<TrainerHome />} />

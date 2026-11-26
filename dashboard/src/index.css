@@ -1379,3 +1379,146 @@ input.input-strumenti {
 .tabella-cliccabile td {
   white-space: nowrap;
 }
+
+/* ---------------------------------------------------------------------------
+   Pagina di accesso: movimento.
+   1. Finita la Z, la via di fuga continua sotto i tre punti; ogni punto compare quando
+      la linea lo raggiunge (una sola volta).
+   2. La pagina risponde: uscita dopo l'accesso, scatto sull'errore, cambio di modulo.
+   --------------------------------------------------------------------------- */
+.accesso-punti {
+  position: relative;
+}
+.accesso-punti::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgb(255 255 255 / 0.45);
+  transform-origin: left;
+  animation: punti-linea 900ms cubic-bezier(0.65, 0, 0.35, 1) 1300ms both;
+}
+.accesso-punti li {
+  position: relative;
+  border-top: 0;
+  padding-top: var(--s-4);
+  animation: punto-entra 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* la tappa: un pallino sulla linea */
+.accesso-punti li::before {
+  content: '';
+  position: absolute;
+  top: -3.5px;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+}
+.accesso-punti li:nth-child(1) {
+  animation-delay: 1350ms;
+}
+.accesso-punti li:nth-child(2) {
+  animation-delay: 1650ms;
+}
+.accesso-punti li:nth-child(3) {
+  animation-delay: 1950ms;
+}
+@keyframes punti-linea {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes punto-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (max-width: 899px) {
+  /* Sul telefono i punti sono in colonna: ognuno ha la sua linea */
+  .accesso-punti::before {
+    display: none;
+  }
+  .accesso-punti li {
+    border-top: 1px solid rgb(255 255 255 / 0.45);
+  }
+}
+
+/* Cambio tra accesso e recupero password: il contenuto entra morbido */
+.targa-contenuto {
+  display: grid;
+  gap: var(--s-5);
+  animation: targa-cambia 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes targa-cambia {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* Credenziali sbagliate: breve scatto laterale del modulo */
+.scossa {
+  animation: scossa 320ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes scossa {
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Accesso riuscito: la freccia scatta in avanti e la pagina esce verso la dashboard */
+.accesso-uscita .simbolo-punto,
+.accesso-uscita .simbolo-via,
+.accesso-uscita .accesso-punti::before,
+.accesso-uscita .accesso-punti li,
+.accesso-uscita .targa-contenuto {
+  animation: none;
+}
+.accesso-uscita .simbolo-freccia {
+  animation: simbolo-scatta 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes simbolo-scatta {
+  to {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+}
+.accesso-uscita .accesso-logo,
+.accesso-uscita .accesso-racconto,
+.accesso-uscita .accesso-colonna,
+.accesso-uscita .accesso-punti {
+  animation: pagina-esce 420ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+@keyframes pagina-esce {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accesso-punti::before,
+  .accesso-punti li,
+  .targa-contenuto,
+  .scossa,
+  .accesso-uscita .simbolo-freccia,
+  .accesso-uscita .accesso-logo,
+  .accesso-uscita .accesso-racconto,
+  .accesso-uscita .accesso-colonna,
+  .accesso-uscita .accesso-punti {
+    animation: none;
+  }
+}
