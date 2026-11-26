@@ -1490,10 +1490,10 @@ input.input-strumenti {
 .accesso-uscita .simbolo-freccia {
   animation: simbolo-scatta 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+/* La freccia scatta in avanti e resta lì, attaccata alla Z: è il sipario a portare via la pagina */
 @keyframes simbolo-scatta {
   to {
-    transform: translateX(48px);
-    opacity: 0;
+    transform: translateX(16px);
   }
 }
 /* Il passaggio alla dashboard: la pagina blu sale come un sipario (View Transitions).
