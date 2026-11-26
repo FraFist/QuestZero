@@ -65,7 +65,7 @@ Strumenti in `backend/scripts/`: `npm run demo:utenti` (formatori e amministrato
 ### Passaggi manuali online, in ordine
 1. **Aggiornare il backend online** — fatto il 24/11. Da ripetere dopo ogni nuova migrazione o funzione (dalla rete di casa: altre reti possono bloccare le porte 5432/6543 del database). In `backend/`:
    `npx supabase db push --remote --dry-run` (controllo), poi `npx supabase db push --remote` e `npx supabase functions deploy`.
-2. **Chiudere la registrazione libera**: sito Supabase → Authentication → Sign In / Providers → disattivare "Allow new users to sign up" (RF-20: si entra solo su invito).
+2. **Chiudere la registrazione libera** — fatto da Francesco (26/11): sito Supabase → Authentication → Sign In / Providers → disattivare "Allow new users to sign up" (RF-20: si entra solo su invito).
 3. **Account amministratore**: Authentication → Users → Add user → Create new user (email, password, "Auto Confirm User"). Poi in SQL Editor:
    `insert into public.profiles (id, role) select id, 'admin' from auth.users where email = '<email>';`
 4. **Primo formatore**: come al punto 3, con un'altra email e `'trainer'` al posto di `'admin'`.
